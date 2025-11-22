@@ -1,0 +1,456 @@
+{
+  "info": {
+    "name": "Restaurant Module",
+    "description": "Restaurant CRUD, public listing, owner management, and admin approval workflow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "auth_token", "value": "" },
+    { "key": "owner_token", "value": "" },
+    { "key": "restaurant_id", "value": "" },
+    { "key": "restaurant_slug", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "List Restaurants",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants?page=1&limit=10&sort=-rating",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sort", "value": "-rating" },
+                { "key": "city_id", "value": "", "disabled": true },
+                { "key": "canton_id", "value": "", "disabled": true },
+                { "key": "cuisine_id", "value": "", "disabled": true },
+                { "key": "brand_id", "value": "", "disabled": true },
+                { "key": "postal_code", "value": "", "disabled": true },
+                { "key": "min_rating", "value": "", "disabled": true },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "lang", "value": "de", "disabled": true }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.environment.set('restaurant_id', pm.response.json().data[0].id);",
+                  "  pm.environment.set('restaurant_slug', pm.response.json().data[0].slug);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Restaurant by Slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/slug/{{restaurant_slug}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "slug", "{{restaurant_slug}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has cuisines', () => pm.expect(pm.response.json().data).to.have.property('cuisines'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Restaurant by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has cuisines', () => pm.expect(pm.response.json().data).to.have.property('cuisines'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Restaurants",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants?search=pizza&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants"],
+              "query": [
+                { "key": "search", "value": "pizza" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has results', () => pm.expect(pm.response.json().data.length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter by City",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants?city_id=6993a9f77dcee68d585a0b9b&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants"],
+              "query": [
+                { "key": "city_id", "value": "6993a9f77dcee68d585a0b9b" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Cuisine",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants?cuisine_id=6993a9f77dcee68d585a0ba9&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants"],
+              "query": [
+                { "key": "cuisine_id", "value": "6993a9f77dcee68d585a0ba9" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Owner",
+      "item": [
+        {
+          "name": "Create Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Test Restaurant\",\n  \"address\": \"Bahnhofstrasse 1\",\n  \"postal_code\": \"8001\",\n  \"city_id\": \"6993a9f77dcee68d585a0b9b\",\n  \"canton_id\": \"6993a9f77dcee68d585a0b98\",\n  \"phone\": \"+41 44 123 45 67\",\n  \"delivery_fee\": 5.00,\n  \"minimum_order\": 20,\n  \"supports_delivery\": true,\n  \"supports_pickup\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Status is DRAFT', () => pm.expect(pm.response.json().data.status).to.eql('DRAFT'));",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('new_restaurant_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/my",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "my"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Own Restaurant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+41 44 999 88 77\",\n  \"minimum_order\": 25\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{new_restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{new_restaurant_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle Active Off",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{new_restaurant_id}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{new_restaurant_id}}", "toggle-active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List All Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "is_active", "value": "", "disabled": true },
+                { "key": "search", "value": "", "disabled": true }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has total', () => pm.expect(pm.response.json().meta.total).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Pending Approvals",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/pending",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{restaurant_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Restaurant (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_featured\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{restaurant_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Change Status — Submit for Approval",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PENDING_APPROVAL\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{new_restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{new_restaurant_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Change Status — Approve",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{new_restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{new_restaurant_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Change Status — Publish",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PUBLISHED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{new_restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{new_restaurant_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Change Status — Reject",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"rejection_reason\": \"Menu is incomplete. Please add at least 5 items.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{new_restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{new_restaurant_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Delete Restaurant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{new_restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{new_restaurant_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

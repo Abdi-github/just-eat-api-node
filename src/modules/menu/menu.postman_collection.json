@@ -1,0 +1,569 @@
+{
+  "info": {
+    "name": "Just Eat - Menu Module",
+    "_postman_id": "menu-module-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Menu category and menu item management for Just Eat API"
+  },
+  "item": [
+    {
+      "name": "🔓 Public Menu",
+      "description": "Public menu endpoints (no authentication required)",
+      "item": [
+        {
+          "name": "Get Full Menu (EN)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has categories', () => { pm.expect(pm.response.json().data.categories).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Full Menu (DE - default)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu"]
+            }
+          }
+        },
+        {
+          "name": "Get Full Menu (FR)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu?lang=fr",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu"],
+              "query": [{ "key": "lang", "value": "fr" }]
+            }
+          }
+        },
+        {
+          "name": "List Menu Items (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu/items?limit=10&page=1&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu", "items"],
+              "query": [
+                { "key": "limit", "value": "10" },
+                { "key": "page", "value": "1" },
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pagination', () => { pm.expect(pm.response.json().meta).to.have.property('total'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Menu Items - Filter by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu/items?category_id={{category_id}}&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu", "items"],
+              "query": [
+                { "key": "category_id", "value": "{{category_id}}" },
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Menu Items - Search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu/items?search=burger&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu", "items"],
+              "query": [
+                { "key": "search", "value": "burger" },
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Menu Items - Price Range",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/{{restaurant_id}}/menu/items?min_price=10&max_price=25&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "{{restaurant_id}}", "menu", "items"],
+              "query": [
+                { "key": "min_price", "value": "10" },
+                { "key": "max_price", "value": "25" },
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Menu - Invalid Restaurant",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/restaurants/000000000000000000000000/menu?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["public", "restaurants", "000000000000000000000000", "menu"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error message', () => { pm.expect(pm.response.json().message).to.include('not found'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Owner - Categories",
+      "description": "Restaurant owner menu category management (requires owner_token)",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has categories', () => { pm.expect(pm.response.json().data).to.be.an('array'); });",
+                  "if (pm.response.json().data && pm.response.json().data.length > 0) { pm.environment.set('category_id', pm.response.json().data[0].id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Special Sauces\",\n    \"fr\": \"Sauces Spéciales\",\n    \"de\": \"Spezielle Soßen\",\n    \"it\": \"Salse Speciali\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.json().data) { pm.environment.set('new_category_id', pm.response.json().data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories/{{new_category_id}}?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories", "{{new_category_id}}"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has name', () => { pm.expect(pm.response.json().data.name).to.be.a('string'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Premium Sauces\"\n  },\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories/{{new_category_id}}?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories", "{{new_category_id}}"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Name updated', () => { pm.expect(pm.response.json().data.name).to.eql('Premium Sauces'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reorder Categories",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order\": [\n    { \"id\": \"{{category_id}}\", \"sort_order\": 1 },\n    { \"id\": \"{{new_category_id}}\", \"sort_order\": 0 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories/reorder",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories", "reorder"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/categories/{{new_category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "categories", "{{new_category_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Shows deleted items count', () => { pm.expect(pm.response.json().data).to.have.property('deleted_items'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Owner - Items",
+      "description": "Restaurant owner menu item management (requires owner_token)",
+      "item": [
+        {
+          "name": "List Items",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items?limit=10&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items"],
+              "query": [
+                { "key": "limit", "value": "10" },
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.json().data && pm.response.json().data.length > 0) { pm.environment.set('menu_item_id', pm.response.json().data[0].id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{category_id}}\",\n  \"name\": {\n    \"en\": \"BBQ Sauce\",\n    \"fr\": \"Sauce BBQ\",\n    \"de\": \"BBQ-Soße\",\n    \"it\": \"Salsa BBQ\"\n  },\n  \"description\": {\n    \"en\": \"Our signature BBQ sauce\",\n    \"fr\": \"Notre sauce BBQ\",\n    \"de\": \"Unsere BBQ-Soße\",\n    \"it\": \"La nostra salsa BBQ\"\n  },\n  \"price\": 3.50,\n  \"allergens\": [\"mustard\"],\n  \"dietary_flags\": [\"vegan\", \"gluten_free\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.json().data) { pm.environment.set('new_item_id', pm.response.json().data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/{{new_item_id}}?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "{{new_item_id}}"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has price', () => { pm.expect(pm.response.json().data.price).to.be.a('number'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 4.00,\n  \"is_popular\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/{{new_item_id}}?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "{{new_item_id}}"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Price updated', () => { pm.expect(pm.response.json().data.price).to.eql(4); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle Availability (OFF)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"is_available\": false }"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/{{new_item_id}}/availability?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "{{new_item_id}}", "availability"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Availability toggled', () => { pm.expect(pm.response.json().data.is_available).to.be.false; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle Availability (ON)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"is_available\": true }"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/{{new_item_id}}/availability?lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "{{new_item_id}}", "availability"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Availability toggled', () => { pm.expect(pm.response.json().data.is_available).to.be.true; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reorder Items",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order\": [\n    { \"id\": \"{{menu_item_id}}\", \"sort_order\": 1 },\n    { \"id\": \"{{new_item_id}}\", \"sort_order\": 0 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/reorder",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "reorder"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Item",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{owner_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/menu/items/{{new_item_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "menu", "items", "{{new_item_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
