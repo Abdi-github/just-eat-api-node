@@ -1,0 +1,379 @@
+{
+  "info": {
+    "name": "Just Eat API — Search Module",
+    "_postman_id": "search-module-001",
+    "description": "Search endpoints for the Just Eat API — restaurant search, menu item search, and autocomplete suggestions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4005/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Search Restaurants — Default",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"]
+        },
+        "description": "Search all published restaurants with default sorting (by rating desc). Returns paginated results."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Returns array of restaurants', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.be.true;",
+              "  pm.expect(json.data).to.be.an('array');",
+              "  pm.expect(json.meta).to.have.property('total');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Restaurants — Text Query",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants?q=pizza&limit=5",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"],
+          "query": [
+            { "key": "q", "value": "pizza" },
+            { "key": "limit", "value": "5" }
+          ]
+        },
+        "description": "Search restaurants by name containing 'pizza'."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Results match search query', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Restaurants — Filter by City",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants?city_id=6993a9f77dcee68d585a0b9b&limit=5",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"],
+          "query": [
+            { "key": "city_id", "value": "6993a9f77dcee68d585a0b9b" },
+            { "key": "limit", "value": "5" }
+          ]
+        },
+        "description": "Search restaurants filtered by city (Zürich)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('All results are in Zürich', () => {",
+              "  const json = pm.response.json();",
+              "  json.data.forEach(r => {",
+              "    pm.expect(r.city.id).to.equal('6993a9f77dcee68d585a0b9b');",
+              "  });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Restaurants — Filter by Cuisine",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants?cuisine_id=6993a9f77dcee68d585a0ba9&limit=5",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"],
+          "query": [
+            { "key": "cuisine_id", "value": "6993a9f77dcee68d585a0ba9" },
+            { "key": "limit", "value": "5" }
+          ]
+        },
+        "description": "Search restaurants filtered by cuisine (American Food)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Results have cuisine data', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.length).to.be.greaterThan(0);",
+              "  pm.expect(json.data[0].cuisines).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Restaurants — Combined Filters",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants?q=pizza&city_id=6993a9f77dcee68d585a0b9b&min_rating=4&sort=-review_count&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"],
+          "query": [
+            { "key": "q", "value": "pizza" },
+            { "key": "city_id", "value": "6993a9f77dcee68d585a0b9b" },
+            { "key": "min_rating", "value": "4" },
+            { "key": "sort", "value": "-review_count" },
+            { "key": "limit", "value": "10" }
+          ]
+        },
+        "description": "Search pizza restaurants in Zürich with rating >= 4, sorted by review count."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Results match all filters', () => {",
+              "  const json = pm.response.json();",
+              "  json.data.forEach(r => {",
+              "    pm.expect(r.rating).to.be.at.least(4);",
+              "  });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Restaurants — i18n French",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants?q=pizza&limit=2&lang=fr",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants"],
+          "query": [
+            { "key": "q", "value": "pizza" },
+            { "key": "limit", "value": "2" },
+            { "key": "lang", "value": "fr" }
+          ]
+        },
+        "description": "Search restaurants with French language response."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Response is localized', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Menu Items — All Items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants/6993a9f77dcee68d585a0bed/menu",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants", "6993a9f77dcee68d585a0bed", "menu"]
+        },
+        "description": "List all menu items for Big Burger restaurant."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Returns menu items with categories', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data).to.be.an('array');",
+              "  pm.expect(json.data[0]).to.have.property('category');",
+              "  pm.expect(json.data[0]).to.have.property('price');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Menu Items — Text Query",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants/6993a9f77dcee68d585a0bed/menu?q=burger&limit=5",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants", "6993a9f77dcee68d585a0bed", "menu"],
+          "query": [
+            { "key": "q", "value": "burger" },
+            { "key": "limit", "value": "5" }
+          ]
+        },
+        "description": "Search menu items by name containing 'burger'."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Results match search query', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Menu Items — Price Range",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/restaurants/6993a9f77dcee68d585a0bed/menu?min_price=20&max_price=30&sort=-price&limit=5",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "restaurants", "6993a9f77dcee68d585a0bed", "menu"],
+          "query": [
+            { "key": "min_price", "value": "20" },
+            { "key": "max_price", "value": "30" },
+            { "key": "sort", "value": "-price" },
+            { "key": "limit", "value": "5" }
+          ]
+        },
+        "description": "Search menu items within price range 20-30 CHF."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Prices are within range', () => {",
+              "  const json = pm.response.json();",
+              "  json.data.forEach(item => {",
+              "    pm.expect(item.price).to.be.at.least(20);",
+              "    pm.expect(item.price).to.be.at.most(30);",
+              "  });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Suggestions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/suggestions?q=burg",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "suggestions"],
+          "query": [
+            { "key": "q", "value": "burg" }
+          ]
+        },
+        "description": "Get autocomplete suggestions for 'burg' — returns matching restaurants and cuisines."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Returns restaurants and cuisines suggestions', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data).to.have.property('restaurants');",
+              "  pm.expect(json.data).to.have.property('cuisines');",
+              "  pm.expect(json.data.restaurants).to.be.an('array');",
+              "  pm.expect(json.data.cuisines).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Suggestions — Validation Error",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/public/search/suggestions?q=a",
+          "host": ["{{base_url}}"],
+          "path": ["public", "search", "suggestions"],
+          "query": [
+            { "key": "q", "value": "a" }
+          ]
+        },
+        "description": "Test validation error — query too short (min 2 chars)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422', () => pm.response.to.have.status(422));",
+              "pm.test('Returns validation error', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.be.false;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

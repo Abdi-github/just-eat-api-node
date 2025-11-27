@@ -1,0 +1,309 @@
+{
+  "info": {
+    "_postman_id": "je-address-module",
+    "name": "Just Eat API - Address Module",
+    "description": "Customer delivery address management endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4005/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth - Login as Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.success) {",
+              "  pm.environment.set('auth_token', res.data.tokens.access_token);",
+              "  pm.environment.set('refresh_token', res.data.tokens.refresh_token);",
+              "  pm.environment.set('user_id', res.data.user.id);",
+              "}",
+              "pm.test('Login successful', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/public/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["public", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "List My Addresses",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "const data = pm.response.json().data;",
+                  "if (data.length > 0) {",
+                  "  pm.environment.set('address_id', data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "x-language", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/addresses?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Address by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has address data', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.property('id');",
+                  "  pm.expect(data).to.have.property('label');",
+                  "  pm.expect(data).to.have.property('city');",
+                  "  pm.expect(data).to.have.property('canton');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "x-language", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/addresses/{{address_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses", "{{address_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Address created', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.label).to.eql('Gym');",
+                  "  pm.expect(data.country).to.eql('CH');",
+                  "});",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('new_address_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-language", "value": "en" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Gym\",\n  \"street\": \"Limmatstrasse 99\",\n  \"street_number\": \"99\",\n  \"floor\": \"1\",\n  \"postal_code\": \"8005\",\n  \"city_id\": \"6993a9f77dcee68d585a0b9b\",\n  \"canton_id\": \"6993a9f77dcee68d585a0b9a\",\n  \"instructions\": \"Side entrance, by the parking lot\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/addresses",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses"]
+            }
+          }
+        },
+        {
+          "name": "Update Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Address updated', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.label).to.eql('Fitness Center');",
+                  "  pm.expect(data.instructions).to.eql('Ring bell 2A');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-language", "value": "en" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Fitness Center\",\n  \"instructions\": \"Ring bell 2A\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/addresses/{{new_address_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses", "{{new_address_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Set Default Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Is now default', () => {",
+                  "  pm.expect(pm.response.json().data.is_default).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "x-language", "value": "en" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/addresses/{{new_address_id}}/default",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses", "{{new_address_id}}", "default"]
+            }
+          }
+        },
+        {
+          "name": "Delete Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/addresses/{{new_address_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses", "{{new_address_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Validation - Invalid Postal Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 422', () => pm.response.to.have.status(422));",
+                  "pm.test('Has postal code error', () => {",
+                  "  const errors = pm.response.json().errors;",
+                  "  pm.expect(errors.some(e => e.field === 'postal_code')).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Bad\",\n  \"street\": \"Test\",\n  \"street_number\": \"1\",\n  \"postal_code\": \"123\",\n  \"city_id\": \"6993a9f77dcee68d585a0b9b\",\n  \"canton_id\": \"6993a9f77dcee68d585a0b9a\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/addresses",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses"]
+            }
+          }
+        },
+        {
+          "name": "i18n - German City Names",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('German city name', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.city.name).to.eql('Zürich');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" },
+              { "key": "x-language", "value": "de" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/addresses/{{address_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "addresses", "{{address_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
