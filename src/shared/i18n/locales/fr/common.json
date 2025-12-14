@@ -1,0 +1,15 @@
+{
+  "app_name": "just-eat.ch",
+  "welcome": "Bienvenue sur just-eat.ch",
+  "success": "Opération terminée avec succès",
+  "not_found": "Ressource introuvable",
+  "server_error": "Erreur interne du serveur",
+  "unauthorized": "Accès non autorisé",
+  "forbidden": "Accès interdit",
+  "bad_request": "Requête invalide",
+  "created": "Ressource créée avec succès",
+  "updated": "Ressource mise à jour avec succès",
+  "deleted": "Ressource supprimée avec succès",
+  "retrieved": "Ressource récupérée avec succès",
+  "list_retrieved": "Liste récupérée avec succès"
+}

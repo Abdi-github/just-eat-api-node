@@ -1,0 +1,19 @@
+{
+  "internal_server_error": "Erreur interne du serveur",
+  "not_found": "La ressource demandée est introuvable",
+  "unauthorized": "Vous devez être connecté pour accéder à cette ressource",
+  "forbidden": "Vous n'avez pas la permission d'accéder à cette ressource",
+  "too_many_requests": "Trop de requêtes. Veuillez réessayer plus tard",
+  "invalid_credentials": "E-mail ou mot de passe invalide",
+  "token_expired": "Votre session a expiré. Veuillez vous reconnecter",
+  "token_invalid": "Jeton d'authentification invalide",
+  "email_exists": "Un compte avec cet e-mail existe déjà",
+  "account_inactive": "Votre compte a été désactivé",
+  "restaurant_not_found": "Restaurant introuvable",
+  "order_not_found": "Commande introuvable",
+  "menu_item_not_found": "Article du menu introuvable",
+  "invalid_status_transition": "Transition de statut invalide",
+  "restaurant_closed": "Ce restaurant est actuellement fermé",
+  "minimum_order_not_met": "La commande n'atteint pas le montant minimum",
+  "delivery_zone_not_covered": "La livraison n'est pas disponible pour cette adresse"
+}

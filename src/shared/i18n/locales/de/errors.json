@@ -1,0 +1,19 @@
+{
+  "internal_server_error": "Interner Serverfehler",
+  "not_found": "Die angeforderte Ressource wurde nicht gefunden",
+  "unauthorized": "Sie müssen angemeldet sein, um auf diese Ressource zuzugreifen",
+  "forbidden": "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen",
+  "too_many_requests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut",
+  "invalid_credentials": "Ungültige E-Mail oder Passwort",
+  "token_expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
+  "token_invalid": "Ungültiges Authentifizierungstoken",
+  "email_exists": "Ein Konto mit dieser E-Mail-Adresse existiert bereits",
+  "account_inactive": "Ihr Konto wurde deaktiviert",
+  "restaurant_not_found": "Restaurant nicht gefunden",
+  "order_not_found": "Bestellung nicht gefunden",
+  "menu_item_not_found": "Menüpunkt nicht gefunden",
+  "invalid_status_transition": "Ungültiger Statusübergang",
+  "restaurant_closed": "Dieses Restaurant ist derzeit geschlossen",
+  "minimum_order_not_met": "Bestellung erreicht den Mindestbestellwert nicht",
+  "delivery_zone_not_covered": "Lieferung ist für diese Adresse nicht verfügbar"
+}

@@ -1,0 +1,14 @@
+{
+  "validation_error": "Validation error",
+  "required_field": "{{field}} is required",
+  "invalid_email": "Please provide a valid email address",
+  "invalid_password": "Password must be at least 8 characters with uppercase, lowercase, number and special character",
+  "invalid_phone": "Please provide a valid phone number",
+  "invalid_id": "Invalid ID format",
+  "min_length": "{{field}} must be at least {{min}} characters",
+  "max_length": "{{field}} must not exceed {{max}} characters",
+  "invalid_enum": "{{field}} must be one of: {{values}}",
+  "invalid_number": "{{field}} must be a valid number",
+  "min_value": "{{field}} must be at least {{min}}",
+  "max_value": "{{field}} must not exceed {{max}}"
+}

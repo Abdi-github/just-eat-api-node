@@ -1,0 +1,14 @@
+{
+  "validation_error": "Errore di validazione",
+  "required_field": "{{field}} è obbligatorio",
+  "invalid_email": "Inserisci un indirizzo e-mail valido",
+  "invalid_password": "La password deve contenere almeno 8 caratteri con maiuscola, minuscola, numero e carattere speciale",
+  "invalid_phone": "Inserisci un numero di telefono valido",
+  "invalid_id": "Formato ID non valido",
+  "min_length": "{{field}} deve contenere almeno {{min}} caratteri",
+  "max_length": "{{field}} non deve superare {{max}} caratteri",
+  "invalid_enum": "{{field}} deve essere uno dei seguenti: {{values}}",
+  "invalid_number": "{{field}} deve essere un numero valido",
+  "min_value": "{{field}} deve essere almeno {{min}}",
+  "max_value": "{{field}} non deve superare {{max}}"
+}

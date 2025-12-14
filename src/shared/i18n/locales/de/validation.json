@@ -1,0 +1,14 @@
+{
+  "validation_error": "Validierungsfehler",
+  "required_field": "{{field}} ist erforderlich",
+  "invalid_email": "Bitte geben Sie eine gültige E-Mail-Adresse an",
+  "invalid_password": "Das Passwort muss mindestens 8 Zeichen mit Gross-/Kleinbuchstaben, Zahl und Sonderzeichen enthalten",
+  "invalid_phone": "Bitte geben Sie eine gültige Telefonnummer an",
+  "invalid_id": "Ungültiges ID-Format",
+  "min_length": "{{field}} muss mindestens {{min}} Zeichen lang sein",
+  "max_length": "{{field}} darf {{max}} Zeichen nicht überschreiten",
+  "invalid_enum": "{{field}} muss eines der folgenden sein: {{values}}",
+  "invalid_number": "{{field}} muss eine gültige Zahl sein",
+  "min_value": "{{field}} muss mindestens {{min}} betragen",
+  "max_value": "{{field}} darf {{max}} nicht überschreiten"
+}

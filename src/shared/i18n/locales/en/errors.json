@@ -1,0 +1,19 @@
+{
+  "internal_server_error": "Internal server error",
+  "not_found": "The requested resource was not found",
+  "unauthorized": "You must be logged in to access this resource",
+  "forbidden": "You do not have permission to access this resource",
+  "too_many_requests": "Too many requests. Please try again later",
+  "invalid_credentials": "Invalid email or password",
+  "token_expired": "Your session has expired. Please log in again",
+  "token_invalid": "Invalid authentication token",
+  "email_exists": "An account with this email already exists",
+  "account_inactive": "Your account has been deactivated",
+  "restaurant_not_found": "Restaurant not found",
+  "order_not_found": "Order not found",
+  "menu_item_not_found": "Menu item not found",
+  "invalid_status_transition": "Invalid status transition",
+  "restaurant_closed": "This restaurant is currently closed",
+  "minimum_order_not_met": "Order does not meet minimum order amount",
+  "delivery_zone_not_covered": "Delivery is not available for this address"
+}
