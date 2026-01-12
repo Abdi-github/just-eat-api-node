@@ -1,0 +1,121 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a1100",
+    "name": "super_admin",
+    "display_name": {
+      "en": "Super Administrator",
+      "fr": "Super Administrateur",
+      "de": "Super Administrator",
+      "it": "Super Amministratore"
+    },
+    "description": {
+      "en": "Full platform control including system configuration",
+      "fr": "Contrôle total de la plateforme y compris la configuration système",
+      "de": "Volle Plattformkontrolle einschliesslich Systemkonfiguration",
+      "it": "Controllo completo della piattaforma inclusa la configurazione di sistema"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1101",
+    "name": "platform_admin",
+    "display_name": {
+      "en": "Platform Administrator",
+      "fr": "Administrateur Plateforme",
+      "de": "Plattform Administrator",
+      "it": "Amministratore Piattaforma"
+    },
+    "description": {
+      "en": "Moderate restaurants, manage content, handle support",
+      "fr": "Modérer les restaurants, gérer le contenu, traiter le support",
+      "de": "Restaurants moderieren, Inhalte verwalten, Support bearbeiten",
+      "it": "Moderare ristoranti, gestire contenuti, gestire supporto"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1102",
+    "name": "support_agent",
+    "display_name": {
+      "en": "Support Agent",
+      "fr": "Agent de Support",
+      "de": "Support-Agent",
+      "it": "Agente di Supporto"
+    },
+    "description": {
+      "en": "Handle customer issues, view orders, process refunds",
+      "fr": "Traiter les problèmes clients, voir les commandes, traiter les remboursements",
+      "de": "Kundenprobleme bearbeiten, Bestellungen ansehen, Erstattungen bearbeiten",
+      "it": "Gestire problemi clienti, visualizzare ordini, elaborare rimborsi"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1103",
+    "name": "restaurant_owner",
+    "display_name": {
+      "en": "Restaurant Owner",
+      "fr": "Propriétaire de Restaurant",
+      "de": "Restaurantbesitzer",
+      "it": "Proprietario Ristorante"
+    },
+    "description": {
+      "en": "Full control over own restaurant(s), menu, orders, and staff",
+      "fr": "Contrôle total sur son/ses restaurant(s), menu, commandes et personnel",
+      "de": "Volle Kontrolle über eigene(s) Restaurant(s), Menü, Bestellungen und Personal",
+      "it": "Controllo completo sui propri ristoranti, menu, ordini e personale"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1104",
+    "name": "restaurant_staff",
+    "display_name": {
+      "en": "Restaurant Staff",
+      "fr": "Personnel de Restaurant",
+      "de": "Restaurantmitarbeiter",
+      "it": "Personale Ristorante"
+    },
+    "description": {
+      "en": "Manage incoming orders, update menu availability",
+      "fr": "Gérer les commandes entrantes, mettre à jour la disponibilité du menu",
+      "de": "Eingehende Bestellungen verwalten, Menüverfügbarkeit aktualisieren",
+      "it": "Gestire ordini in arrivo, aggiornare disponibilità menu"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1105",
+    "name": "courier",
+    "display_name": {
+      "en": "Delivery Courier",
+      "fr": "Coursier de Livraison",
+      "de": "Lieferkurier",
+      "it": "Corriere di Consegna"
+    },
+    "description": {
+      "en": "Pick up and deliver orders to customers",
+      "fr": "Récupérer et livrer les commandes aux clients",
+      "de": "Bestellungen abholen und an Kunden liefern",
+      "it": "Ritirare e consegnare ordini ai clienti"
+    },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1106",
+    "name": "customer",
+    "display_name": {
+      "en": "Customer",
+      "fr": "Client",
+      "de": "Kunde",
+      "it": "Cliente"
+    },
+    "description": {
+      "en": "Browse restaurants, place orders, leave reviews",
+      "fr": "Parcourir les restaurants, passer des commandes, laisser des avis",
+      "de": "Restaurants durchsuchen, Bestellungen aufgeben, Bewertungen hinterlassen",
+      "it": "Sfogliare ristoranti, effettuare ordini, lasciare recensioni"
+    },
+    "is_active": true
+  }
+]

@@ -1,0 +1,877 @@
+{
+  "info": {
+    "name": "Just Eat API — Admin Module",
+    "description": "Comprehensive Postman collection for all admin endpoints (60+ total across 13 modules).\n\nAll endpoints require admin authentication.\n\nBase URL: http://localhost:4005/api/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "admin_token", "value": "" },
+    { "key": "managed_user_id", "value": "" },
+    { "key": "restaurant_id", "value": "6993a9f77dcee68d585a0bed" },
+    { "key": "order_id", "value": "" },
+    { "key": "delivery_id", "value": "" },
+    { "key": "review_id", "value": "" },
+    { "key": "coupon_id", "value": "" },
+    { "key": "stamp_card_id", "value": "" },
+    { "key": "payment_id", "value": "" },
+    { "key": "application_id", "value": "" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-login if no admin token",
+          "if (!pm.variables.get('admin_token') || pm.variables.get('admin_token') === '') {",
+          "  pm.sendRequest({",
+          "    url: pm.variables.get('base_url') + '/public/auth/login',",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({ email: 'admin@justeat-clone.ch', password: 'Password123!' }) }",
+          "  }, (err, res) => {",
+          "    if (!err && res.code === 200) {",
+          "      const token = res.json().data.tokens.access_token;",
+          "      pm.variables.set('admin_token', token);",
+          "    }",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/public/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["public", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "if (json.data && json.data.tokens) {",
+              "  pm.collectionVariables.set('admin_token', json.data.tokens.access_token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/users/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "statistics"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('object'));"] } }]
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/users?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('managed_user_id', pm.response.json().data[0].id || pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{managed_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "{{managed_user_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Test\",\n  \"last_name\": \"AdminCreated\",\n  \"email\": \"admin-created-user@example.ch\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+41791234567\",\n  \"preferred_language\": \"de\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }]
+        },
+        {
+          "name": "Assign Role to User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_id\": \"1103\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{managed_user_id}}/roles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "{{managed_user_id}}", "roles"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }]
+        },
+        {
+          "name": "Suspend User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{managed_user_id}}/suspend",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "{{managed_user_id}}", "suspend"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/users/{{managed_user_id}}/activate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "{{managed_user_id}}", "activate"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🏔️ Locations",
+      "item": [
+        {
+          "name": "Create Canton",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Geneva\",\n    \"fr\": \"Genève\",\n    \"de\": \"Genf\",\n    \"it\": \"Ginevra\"\n  },\n  \"code\": \"GE\",\n  \"slug\": \"geneva\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cantons",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cantons"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }]
+        },
+        {
+          "name": "Create City",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Geneva\",\n    \"fr\": \"Genève\",\n    \"de\": \"Genf\",\n    \"it\": \"Ginevra\"\n  },\n  \"canton_id\": \"{{canton_id}}\",\n  \"slug\": \"geneva\",\n  \"postal_codes\": [\"1200\", \"1201\", \"1202\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cities",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cities"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🍕 Cuisines",
+      "item": [
+        {
+          "name": "Create Cuisine",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Mexican\",\n    \"fr\": \"Mexicain\",\n    \"de\": \"Mexikanisch\",\n    \"it\": \"Messicano\"\n  },\n  \"slug\": \"mexican\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/cuisines",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cuisines"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🏷️ Brands",
+      "item": [
+        {
+          "name": "Create Brand",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wendy's\",\n  \"slug\": \"wendys\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/brands",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Restaurants",
+      "item": [
+        {
+          "name": "Get Pending Approvals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/pending",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "pending"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "List All Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('array'));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('restaurant_id', pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "Get Restaurant by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{restaurant_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Change Restaurant Status (Approve)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{restaurant_id}}", "status"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Change Restaurant Status (Reject)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"rejection_reason\": \"Missing required documentation\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/restaurants/{{restaurant_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "restaurants", "{{restaurant_id}}", "status"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 422', () => pm.expect([200, 422]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "📦 Orders",
+      "item": [
+        {
+          "name": "List All Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('array'));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('order_id', pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "List Orders by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?status=DELIVERED&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [{ "key": "status", "value": "DELIVERED" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/orders/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders", "{{order_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update Order Status (Admin Override)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CANCELLED\",\n  \"cancellation_reason\": \"Admin cancelled — customer request\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders", "{{order_id}}", "status"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 422', () => pm.expect([200, 422]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "💳 Payments",
+      "item": [
+        {
+          "name": "List All Payments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/payments?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('payment_id', pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "{{payment_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Process Refund",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 25.50,\n  \"reason\": \"Customer complaint — incorrect order\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{order_id}}/refund",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "{{order_id}}", "refund"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 400', () => pm.expect([200, 400, 404]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🚚 Deliveries",
+      "item": [
+        {
+          "name": "List All Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('delivery_id', pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "Get Delivery by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create Delivery Assignment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"restaurant_id\": \"{{restaurant_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/create",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "create"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201 or 400', () => pm.expect([201, 400, 404]).to.include(pm.response.code));"] } }]
+        },
+        {
+          "name": "Assign Courier to Delivery",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courier_id\": \"6993a9f77dcee68d585a1020\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}/assign",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}", "assign"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 400', () => pm.expect([200, 400, 404]).to.include(pm.response.code));"] } }]
+        },
+        {
+          "name": "Cancel Delivery",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Order cancelled by customer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}", "cancel"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 400', () => pm.expect([200, 400, 404]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "⭐ Reviews",
+      "item": [
+        {
+          "name": "List All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('array'));", "if (pm.response.json().data?.length > 0) { pm.collectionVariables.set('review_id', pm.response.json().data[0]._id); }"] } }]
+        },
+        {
+          "name": "List Pending Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews?status=PENDING&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews"],
+              "query": [{ "key": "status", "value": "PENDING" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Moderate Review (Approve)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/moderate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}", "moderate"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Moderate Review (Reject)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"REJECTED\",\n  \"reason\": \"Review contains inappropriate language\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/moderate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}", "moderate"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 422', () => pm.expect([200, 422]).to.include(pm.response.code));"] } }]
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 204', () => pm.expect([200, 204]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🎫 Promotions",
+      "item": [
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ADMIN50\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 50,\n  \"minimum_order\": 30,\n  \"max_discount\": 25,\n  \"usage_limit\": 100,\n  \"per_user_limit\": 1,\n  \"valid_from\": \"2025-01-01T00:00:00.000Z\",\n  \"valid_until\": \"2025-12-31T23:59:59.000Z\",\n  \"scope\": \"platform\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/promotions/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "promotions", "coupons"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "if (pm.response.json().data) { pm.collectionVariables.set('coupon_id', pm.response.json().data._id); }"] } }]
+        },
+        {
+          "name": "List Coupons",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/promotions/coupons?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "promotions", "coupons"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get Coupon by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/promotions/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "promotions", "coupons", "{{coupon_id}}"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create Stamp Card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"name\": {\n    \"en\": \"Buy 10 Get 1 Free\",\n    \"fr\": \"Achetez 10, 1 offert\",\n    \"de\": \"10 kaufen, 1 gratis\",\n    \"it\": \"Compra 10, 1 gratis\"\n  },\n  \"stamps_required\": 10,\n  \"reward_type\": \"free_item\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/promotions/stamps",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "promotions", "stamps"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "if (pm.response.json().data) { pm.collectionVariables.set('stamp_card_id', pm.response.json().data._id); }"] } }]
+        },
+        {
+          "name": "List Stamp Cards",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/promotions/stamps?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "promotions", "stamps"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications",
+      "item": [
+        {
+          "name": "Send Notification to Users",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"6993a9f77dcee68d585a1030\"],\n  \"type\": \"SYSTEM\",\n  \"title\": {\n    \"en\": \"System Maintenance\",\n    \"fr\": \"Maintenance système\",\n    \"de\": \"Systemwartung\",\n    \"it\": \"Manutenzione sistema\"\n  },\n  \"body\": {\n    \"en\": \"Scheduled maintenance tonight.\",\n    \"fr\": \"Maintenance prévue ce soir.\",\n    \"de\": \"Geplante Wartung heute Nacht.\",\n    \"it\": \"Manutenzione programmata stanotte.\"\n  },\n  \"send_email\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/notifications/send",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications", "send"]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200 or 201', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "📊 Analytics",
+      "item": [
+        {
+          "name": "Platform Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/analytics/dashboard?date_preset=this_year",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "analytics", "dashboard"],
+              "query": [{ "key": "date_preset", "value": "this_year" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('object'));"] } }]
+        },
+        {
+          "name": "Platform Revenue",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/analytics/revenue?date_preset=this_year&period=monthly",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "analytics", "revenue"],
+              "query": [{ "key": "date_preset", "value": "this_year" }, { "key": "period", "value": "monthly" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Top Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/analytics/top-restaurants?date_preset=this_year&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "analytics", "top-restaurants"],
+              "query": [{ "key": "date_preset", "value": "this_year" }, { "key": "limit", "value": "10" }]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "📋 Applications",
+      "item": [
+        {
+          "name": "List Applications (Pending)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/applications?status=pending_approval&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "applications"],
+              "query": [
+                { "key": "status", "value": "pending_approval" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "List all applications with optional filters. Query params: status (pending_approval|approved|rejected), type (restaurant_owner|courier), page, limit."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has applications array', () => {",
+            "  const data = pm.response.json().data;",
+            "  pm.expect(data).to.have.property('applications');",
+            "  pm.expect(data.applications).to.be.an('array');",
+            "});",
+            "if (pm.response.json().data.applications.length > 0) {",
+            "  pm.variables.set('application_id', pm.response.json().data.applications[0].id);",
+            "}"
+          ] } }]
+        },
+        {
+          "name": "List Applications (by Type: Courier)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/applications?type=courier&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "applications"],
+              "query": [
+                { "key": "type", "value": "courier" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "List applications filtered by type (courier)."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Approve Application",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/admin/applications/{{application_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "applications", "{{application_id}}", "approve"]
+            },
+            "description": "Approve a pending application. For restaurant owners, activates the draft restaurant. For couriers, activates the courier role."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+            "pm.test('Approved message', () => pm.expect(pm.response.json().message).to.include('approved'));"
+          ] } }]
+        },
+        {
+          "name": "Reject Application",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Missing required business documentation. Please reapply with valid permits.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/applications/{{application_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "applications", "{{application_id}}", "reject"]
+            },
+            "description": "Reject a pending application with an optional reason. Body: { reason?: string (max 500 chars) }."
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+            "pm.test('Rejected message', () => pm.expect(pm.response.json().message).to.include('rejected'));"
+          ] } }]
+        }
+      ]
+    }
+  ]
+}

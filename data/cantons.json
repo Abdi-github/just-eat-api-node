@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a0b96",
+    "name": {
+      "en": "Bern",
+      "fr": "Berne",
+      "de": "Bern",
+      "it": "Berna"
+    },
+    "slug": "bern",
+    "code": "BE",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b97",
+    "name": {
+      "en": "Fribourg",
+      "fr": "Fribourg",
+      "de": "Freiburg",
+      "it": "Friburgo"
+    },
+    "slug": "freiburg",
+    "code": "FR",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b98",
+    "name": {
+      "en": "Neuchâtel",
+      "fr": "Neuchâtel",
+      "de": "Neuenburg",
+      "it": "Neuchâtel"
+    },
+    "slug": "neuenburg",
+    "code": "NE",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b99",
+    "name": {
+      "en": "Vaud",
+      "fr": "Vaud",
+      "de": "Waadt",
+      "it": "Vaud"
+    },
+    "slug": "waadt",
+    "code": "VD",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b9a",
+    "name": {
+      "en": "Zurich",
+      "fr": "Zurich",
+      "de": "Zürich",
+      "it": "Zurigo"
+    },
+    "slug": "zuerich",
+    "code": "ZH",
+    "is_active": true
+  }
+]

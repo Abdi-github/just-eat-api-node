@@ -1,0 +1,298 @@
+{
+  "info": {
+    "name": "⭐ Reviews — Just Eat API",
+    "description": "Review module — customer reviews, restaurant owner replies, admin moderation, rating summaries. Supports multi-language responses (en, fr, de, it).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔓 Public",
+      "item": [
+        {
+          "name": "Get Restaurant Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/reviews/restaurant/{{restaurant_id}}?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews", "restaurant", "{{restaurant_id}}"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sort", "value": "-created_at", "disabled": true },
+                { "key": "lang", "value": "en", "disabled": true }
+              ]
+            },
+            "description": "Get approved reviews for a restaurant. Public — no auth required. Supports pagination and sorting."
+          }
+        },
+        {
+          "name": "Get Rating Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/reviews/restaurant/{{restaurant_id}}/summary",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews", "restaurant", "{{restaurant_id}}", "summary"]
+            },
+            "description": "Get rating summary for a restaurant — average rating, total count, and star distribution (1-5)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"rating\": 5,\n  \"comment\": \"Amazing food and fast delivery!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews"]
+            },
+            "description": "Create a review for a delivered order. Customer must own the order, order must be DELIVERED, and no existing review for the order."
+          }
+        },
+        {
+          "name": "Get My Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/reviews/my?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews", "my"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Get all reviews written by the authenticated customer."
+          }
+        },
+        {
+          "name": "Update My Review",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated — good food but delivery was a bit slow.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews", "{{review_id}}"]
+            },
+            "description": "Update own review. Resets status to PENDING for re-moderation."
+          }
+        },
+        {
+          "name": "Delete My Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "reviews", "{{review_id}}"]
+            },
+            "description": "Delete own review."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Restaurant Owner",
+      "item": [
+        {
+          "name": "List Restaurant Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/reviews?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "reviews"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "APPROVED", "disabled": true },
+                { "key": "min_rating", "value": "1", "disabled": true },
+                { "key": "max_rating", "value": "5", "disabled": true }
+              ]
+            },
+            "description": "List all reviews for the owner's restaurant (all statuses). Supports filtering by status and rating range."
+          }
+        },
+        {
+          "name": "Reply to Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reply\": \"Thank you for your feedback! We're glad you enjoyed the food.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/reviews/{{review_id}}/reply",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "reviews", "{{review_id}}", "reply"]
+            },
+            "description": "Restaurant owner replies to a customer review. Only one reply allowed per review."
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin",
+      "item": [
+        {
+          "name": "List All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "PENDING", "disabled": true },
+                { "key": "restaurant_id", "value": "", "disabled": true },
+                { "key": "min_rating", "value": "1", "disabled": true }
+              ]
+            },
+            "description": "List all reviews with filtering by status, restaurant, and rating."
+          }
+        },
+        {
+          "name": "Get Review By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}"]
+            },
+            "description": "Get full review details by ID."
+          }
+        },
+        {
+          "name": "Moderate Review (Approve)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/moderate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}", "moderate"]
+            },
+            "description": "Approve a pending review."
+          }
+        },
+        {
+          "name": "Moderate Review (Reject)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"rejection_reason\": \"Contains inappropriate language\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/moderate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}", "moderate"]
+            },
+            "description": "Reject a review with reason."
+          }
+        },
+        {
+          "name": "Moderate Review (Flag)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FLAGGED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/moderate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}", "moderate"]
+            },
+            "description": "Flag a review for further investigation."
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "reviews", "{{review_id}}"]
+            },
+            "description": "Permanently delete a review."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "admin_token", "value": "" },
+    { "key": "customer_token", "value": "" },
+    { "key": "owner_token", "value": "" },
+    { "key": "restaurant_id", "value": "6993a9f77dcee68d585a0bed" },
+    { "key": "order_id", "value": "" },
+    { "key": "review_id", "value": "" }
+  ]
+}

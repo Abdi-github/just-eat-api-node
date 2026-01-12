@@ -1,0 +1,114 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a1600",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 1,
+    "open_time": "10:00",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1601",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 2,
+    "open_time": "10:00",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1602",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 3,
+    "open_time": "10:00",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1603",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 4,
+    "open_time": "10:00",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1604",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 5,
+    "open_time": "10:00",
+    "close_time": "23:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1605",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 6,
+    "open_time": "11:00",
+    "close_time": "23:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1606",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "day_of_week": 0,
+    "open_time": "11:00",
+    "close_time": "22:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1610",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 1,
+    "open_time": "11:00",
+    "close_time": "22:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1611",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 2,
+    "open_time": "11:00",
+    "close_time": "22:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1612",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 3,
+    "open_time": "11:00",
+    "close_time": "22:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1613",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 4,
+    "open_time": "11:00",
+    "close_time": "22:30",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1614",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 5,
+    "open_time": "11:00",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1615",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 6,
+    "open_time": "11:30",
+    "close_time": "23:00",
+    "is_closed": false
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1616",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "day_of_week": 0,
+    "open_time": "12:00",
+    "close_time": "22:00",
+    "is_closed": false
+  }
+]

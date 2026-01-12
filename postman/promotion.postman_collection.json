@@ -1,0 +1,608 @@
+{
+  "info": {
+    "name": "Just Eat - Promotions",
+    "description": "Promotion module endpoints — coupons and stamp cards",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "admin_token", "value": "" },
+    { "key": "owner_token", "value": "" },
+    { "key": "customer_token", "value": "" },
+    { "key": "restaurant_id", "value": "6993a9f77dcee68d585a0bed" },
+    { "key": "coupon_id", "value": "" },
+    { "key": "stamp_card_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('admin_token', pm.response.json().data.tokens.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Owner",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner.bigburger@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('owner_token', pm.response.json().data.tokens.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Customer",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('customer_token', pm.response.json().data.tokens.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Coupons",
+      "item": [
+        {
+          "name": "Create Platform Coupon (Percentage)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/promotions/coupons",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME20\",\n  \"description\": \"Welcome discount for new customers\",\n  \"discount_type\": \"PERCENTAGE\",\n  \"discount_value\": 20,\n  \"minimum_order\": 25,\n  \"maximum_discount\": 15,\n  \"scope\": \"PLATFORM\",\n  \"usage_limit\": 1000,\n  \"per_user_limit\": 1,\n  \"valid_from\": \"2025-01-01T00:00:00.000Z\",\n  \"valid_until\": \"2027-12-31T23:59:59.000Z\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Coupon created', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('coupon_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Platform Coupon (Flat)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/promotions/coupons",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FLAT5OFF\",\n  \"description\": \"CHF 5 off any order\",\n  \"discount_type\": \"FLAT\",\n  \"discount_value\": 5,\n  \"minimum_order\": 15,\n  \"scope\": \"PLATFORM\",\n  \"valid_until\": \"2027-12-31T23:59:59.000Z\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Flat coupon created', () => pm.expect(pm.response.json().data.discount_type).to.eql('FLAT'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List All Coupons",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/promotions/coupons",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Coupon by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/promotions/coupons/{{coupon_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Coupon data', () => pm.expect(pm.response.json().data).to.have.property('code'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/admin/promotions/coupons/{{coupon_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated welcome discount\",\n  \"discount_value\": 25\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Updated', () => pm.expect(pm.response.json().data.discount_value).to.eql(25));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/admin/promotions/coupons/{{coupon_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Stamp Cards",
+      "item": [
+        {
+          "name": "Create Stamp Card",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/promotions/stamps",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"5 Stamps Free Delivery\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"stamps_required\": 5,\n  \"reward_description\": \"Free delivery on next order\",\n  \"reward_type\": \"FLAT\",\n  \"reward_value\": 5.90\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('stamp_card_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List All Stamp Cards",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/promotions/stamps",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Stamp Card by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/promotions/stamps/{{stamp_card_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          }
+        },
+        {
+          "name": "Update Stamp Card",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/admin/promotions/stamps/{{stamp_card_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Loyalty Card\",\n  \"stamps_required\": 8\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Stamp Card",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/admin/promotions/stamps/{{stamp_card_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Restaurant Coupons",
+      "item": [
+        {
+          "name": "Create Restaurant Coupon",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/coupons",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BURGER10\",\n  \"description\": \"10% off at Big Burger\",\n  \"discount_type\": \"PERCENTAGE\",\n  \"discount_value\": 10,\n  \"minimum_order\": 20,\n  \"scope\": \"RESTAURANT\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"per_user_limit\": 3,\n  \"valid_until\": \"2027-06-30T23:59:59.000Z\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Restaurant scope', () => pm.expect(pm.response.json().data.scope).to.eql('RESTAURANT'));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('coupon_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Restaurant Coupons",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/coupons",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Restaurant Coupon",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/coupons/{{coupon_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"discount_value\": 15,\n  \"description\": \"Now 15% off!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Restaurant Coupon",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/coupons/{{coupon_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Restaurant Stamp Cards",
+      "item": [
+        {
+          "name": "Create Restaurant Stamp Card",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/stamps",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Big Burger Loyalty Card\",\n  \"description\": \"Collect 10 stamps, get 50% off\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"stamps_required\": 10,\n  \"reward_description\": \"50% off your next order\",\n  \"reward_type\": \"PERCENTAGE\",\n  \"reward_value\": 50,\n  \"valid_until\": \"2027-12-31T23:59:59.000Z\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('stamp_card_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Restaurant Stamp Cards",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/stamps",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ]
+          }
+        },
+        {
+          "name": "Update Restaurant Stamp Card",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/stamps/{{stamp_card_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stamps_required\": 8,\n  \"reward_description\": \"50% off (now easier!)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Restaurant Stamp Card",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/restaurant/{{restaurant_id}}/promotions/stamps/{{stamp_card_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer",
+      "item": [
+        {
+          "name": "Validate Coupon (Valid)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/promotions/coupons/validate",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME20\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"subtotal\": 50\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Valid coupon', () => pm.expect(pm.response.json().data.valid).to.be.true);",
+                  "pm.test('Has discount amount', () => pm.expect(pm.response.json().data.discount_amount).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validate Coupon (Below Minimum)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/promotions/coupons/validate",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME20\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"subtotal\": 10\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Invalid coupon', () => pm.expect(pm.response.json().data.valid).to.be.false);",
+                  "pm.test('Has message', () => pm.expect(pm.response.json().data.message).to.include('Minimum'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validate Coupon (Invalid Code)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/promotions/coupons/validate",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FAKECODE\",\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"subtotal\": 50\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid', () => pm.expect(pm.response.json().data.valid).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "View Restaurant Stamp Cards",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/public/promotions/stamps/restaurant/{{restaurant_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has stamp cards', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Stamp Progress",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/public/promotions/stamps/my-progress",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has progress', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

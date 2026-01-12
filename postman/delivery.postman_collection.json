@@ -1,0 +1,497 @@
+{
+  "info": {
+    "name": "Just Eat API — Deliveries",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Delivery management endpoints for the Just Eat API — covers courier delivery pool, acceptance, status tracking, location updates, customer tracking, and admin management."
+  },
+  "item": [
+    {
+      "name": "🚴 Courier Deliveries",
+      "item": [
+        {
+          "name": "List Available Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/available?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "available"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "postal_code", "value": "8004", "disabled": true },
+                { "key": "city", "value": "Zürich", "disabled": true }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has data array', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Active Delivery",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/active",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "active"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is successful', () => {",
+                  "  pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Delivery History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/history?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "history"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "DELIVERED", "disabled": true },
+                { "key": "from_date", "value": "2026-01-01", "disabled": true },
+                { "key": "to_date", "value": "2026-12-31", "disabled": true }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has data array', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Accept Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/{{delivery_id}}/accept",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "{{delivery_id}}", "accept"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Delivery accepted', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data.status).to.equal('ASSIGNED');",
+                  "  pm.expect(json.data.courier_id).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Status — PICKED_UP",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PICKED_UP\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/{{delivery_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "{{delivery_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status updated to PICKED_UP', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.status).to.equal('PICKED_UP');",
+                  "  pm.expect(json.data.picked_up_at).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Status — IN_TRANSIT",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/{{delivery_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "{{delivery_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status updated to IN_TRANSIT', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.status).to.equal('IN_TRANSIT');",
+                  "  pm.expect(json.data.in_transit_at).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Status — DELIVERED",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/{{delivery_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "{{delivery_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status updated to DELIVERED', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.status).to.equal('DELIVERED');",
+                  "  pm.expect(json.data.delivered_at).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Courier Location",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 47.3769,\n  \"lng\": 8.5417\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/deliveries/{{delivery_id}}/location",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "deliveries", "{{delivery_id}}", "location"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Location updated', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.courier_location.lat).to.equal(47.3769);",
+                  "  pm.expect(json.data.courier_location.lng).to.equal(8.5417);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer Tracking",
+      "item": [
+        {
+          "name": "Track Delivery",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/deliveries/{{order_id}}/track",
+              "host": ["{{base_url}}"],
+              "path": ["public", "deliveries", "{{order_id}}", "track"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tracking data returned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data.status).to.be.a('string');",
+                  "  pm.expect(json.data.pickup_address).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Deliveries",
+      "item": [
+        {
+          "name": "List All Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "PENDING", "disabled": true },
+                { "key": "courier_id", "value": "", "disabled": true },
+                { "key": "restaurant_id", "value": "", "disabled": true }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has data and meta', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.be.an('array');",
+                  "  pm.expect(json.meta).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Delivery By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Delivery details returned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data.id).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Delivery for Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/create",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "create"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 or 200', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Delivery created', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data.status).to.equal('PENDING');",
+                  "  pm.environment.set('delivery_id', json.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Assign Courier to Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courier_id\": \"6993a9f77dcee68d585a1021\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}/assign",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}", "assign"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Courier assigned', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.status).to.equal('ASSIGNED');",
+                  "  pm.expect(json.data.courier_id).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Restaurant closed unexpectedly\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/deliveries/{{delivery_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "deliveries", "{{delivery_id}}", "cancel"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Delivery cancelled', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.status).to.equal('CANCELLED');",
+                  "  pm.expect(json.data.cancelled_at).to.not.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "admin_token", "value": "" },
+    { "key": "courier_token", "value": "" },
+    { "key": "customer_token", "value": "" },
+    { "key": "delivery_id", "value": "" },
+    { "key": "order_id", "value": "" }
+  ]
+}

@@ -1,0 +1,602 @@
+{
+  "info": {
+    "_postman_id": "je-location-collection-001",
+    "name": "Just Eat API - Location Module",
+    "description": "Location management endpoints (Cantons & Cities) for the Just Eat API.\n\nPublic endpoints for browsing Swiss cantons and cities.\nAdmin endpoints for managing locations.\n\nTest credentials:\n- Super Admin: admin@justeat-clone.ch / Password123!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public - Cantons",
+      "item": [
+        {
+          "name": "List Cantons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons"]
+            },
+            "description": "List all cantons with pagination, sorting, and filtering."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has meta', () => pm.expect(pm.response.json().meta).to.have.property('total'));",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.environment.set('canton_id', pm.response.json().data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Cantons (French)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons?lang=fr",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons"],
+              "query": [{ "key": "lang", "value": "fr" }]
+            },
+            "description": "List cantons with French names."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns French names', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  const bern = data.find(c => c.code === 'BE');",
+                  "  if (bern) pm.expect(bern.name).to.eql('Berne');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Canton by Code (ZH)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons/code/ZH",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons", "code", "ZH"]
+            },
+            "description": "Get a canton by its 2-letter code."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct code', () => pm.expect(pm.response.json().data.code).to.eql('ZH'));",
+                  "pm.test('Has city_count', () => pm.expect(pm.response.json().data.city_count).to.be.a('number'));",
+                  "pm.environment.set('canton_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Canton by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons/slug/bern",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons", "slug", "bern"]
+            },
+            "description": "Get a canton by its slug."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct slug', () => pm.expect(pm.response.json().data.slug).to.eql('bern'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Canton by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons/{{canton_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons", "{{canton_id}}"]
+            },
+            "description": "Get a canton by its ObjectId."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has city_count', () => pm.expect(pm.response.json().data).to.have.property('city_count'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Canton's Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cantons/{{canton_id}}/cities",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cantons", "{{canton_id}}", "cities"]
+            },
+            "description": "List all cities within a canton."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Cities have canton', () => {",
+                  "  if (pm.response.json().data.length > 0) {",
+                  "    pm.expect(pm.response.json().data[0]).to.have.property('canton');",
+                  "  }",
+                  "});",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.environment.set('city_id', pm.response.json().data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public - Cities",
+      "item": [
+        {
+          "name": "List Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities"]
+            },
+            "description": "List all cities with pagination, sorting, and filtering."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has meta', () => pm.expect(pm.response.json().meta).to.have.property('total'));",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.environment.set('city_id', pm.response.json().data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Cities (by canton)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities?canton_id={{canton_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities"],
+              "query": [{ "key": "canton_id", "value": "{{canton_id}}" }]
+            },
+            "description": "List cities filtered by canton."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Locations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities/search?q=bern",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities", "search"],
+              "query": [{ "key": "q", "value": "bern" }]
+            },
+            "description": "Search across cantons and cities."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has cantons and cities', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.property('cantons');",
+                  "  pm.expect(data).to.have.property('cities');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get City by Postal Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities/postal/8001",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities", "postal", "8001"]
+            },
+            "description": "Find cities that serve a given postal code."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('City found', () => pm.expect(pm.response.json().data.length).to.be.greaterThan(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get City by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities/slug/lausanne",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities", "slug", "lausanne"]
+            },
+            "description": "Get a city by its slug."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct slug', () => pm.expect(pm.response.json().data.slug).to.eql('lausanne'));",
+                  "pm.test('Has canton', () => pm.expect(pm.response.json().data).to.have.property('canton'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get City by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/locations/cities/{{city_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "locations", "cities", "{{city_id}}"]
+            },
+            "description": "Get a city by its ObjectId."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has postal_codes', () => pm.expect(pm.response.json().data).to.have.property('postal_codes'));",
+                  "pm.test('Has canton', () => pm.expect(pm.response.json().data).to.have.property('canton'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin - Cantons",
+      "item": [
+        {
+          "name": "Login as Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as super_admin to get auth token."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json().data;",
+                  "pm.environment.set('auth_token', data.tokens.access_token);",
+                  "pm.environment.set('refresh_token', data.tokens.refresh_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Canton",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"GE\",\n  \"name\": {\n    \"en\": \"Geneva\",\n    \"fr\": \"Genève\",\n    \"de\": \"Genf\",\n    \"it\": \"Ginevra\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cantons",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cantons"]
+            },
+            "description": "Create a new canton. Requires locations:create permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Canton created', () => {",
+                  "  pm.expect(pm.response.json().data.code).to.eql('GE');",
+                  "  pm.expect(pm.response.json().data.slug).to.eql('genf');",
+                  "});",
+                  "pm.environment.set('new_canton_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Canton",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"it\": \"Ginevra (Cantone)\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cantons/{{new_canton_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cantons", "{{new_canton_id}}"]
+            },
+            "description": "Update a canton. Supports partial name updates. Requires locations:update permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Canton updated', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Canton",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cantons/{{new_canton_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cantons", "{{new_canton_id}}"]
+            },
+            "description": "Delete a canton. Fails if canton has cities. Requires locations:delete permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Canton deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Canton with Cities (Should Fail)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cantons/{{canton_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cantons", "{{canton_id}}"]
+            },
+            "description": "Attempt to delete a canton with cities — should return 400 error."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error message mentions cities', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('cities');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin - Cities",
+      "item": [
+        {
+          "name": "Create City",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"canton_id\": \"{{canton_id}}\",\n  \"name\": {\n    \"en\": \"Winterthur\",\n    \"fr\": \"Winterthour\",\n    \"de\": \"Winterthur\",\n    \"it\": \"Winterthur\"\n  },\n  \"postal_codes\": [8400, 8401, 8402, 8404, 8405]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cities",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cities"]
+            },
+            "description": "Create a new city under a canton. Requires locations:create permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('City created', () => {",
+                  "  pm.expect(pm.response.json().data.slug).to.eql('winterthur');",
+                  "  pm.expect(pm.response.json().data).to.have.property('canton');",
+                  "});",
+                  "pm.environment.set('new_city_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update City",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postal_codes\": [8400, 8401, 8402, 8404, 8405, 8406, 8408, 8409, 8410, 8411, 8412]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cities/{{new_city_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cities", "{{new_city_id}}"]
+            },
+            "description": "Update a city. Requires locations:update permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('City updated', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Postal codes updated', () => {",
+                  "  pm.expect(pm.response.json().data.postal_codes.length).to.eql(11);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete City",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/locations/cities/{{new_city_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "locations", "cities", "{{new_city_id}}"]
+            },
+            "description": "Delete a city. Requires locations:delete permission."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('City deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4005/api/v1"
+    }
+  ]
+}

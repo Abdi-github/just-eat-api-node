@@ -1,0 +1,237 @@
+{
+  "info": {
+    "name": "Just Eat API — Brands",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Brand management endpoints for the Just Eat API"
+  },
+  "item": [
+    {
+      "name": "🔓 Public Brands",
+      "item": [
+        {
+          "name": "List All Brands",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/brands",
+              "host": ["{{base_url}}"],
+              "path": ["public", "brands"]
+            }
+          }
+        },
+        {
+          "name": "List Brands — Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/brands?search=burger",
+              "host": ["{{base_url}}"],
+              "path": ["public", "brands"],
+              "query": [
+                { "key": "search", "value": "burger" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Brands — Sorted",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/brands?sort=-name&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["public", "brands"],
+              "query": [
+                { "key": "sort", "value": "-name" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Brand by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/brands/slug/mcdonalds",
+              "host": ["{{base_url}}"],
+              "path": ["public", "brands", "slug", "mcdonalds"]
+            }
+          }
+        },
+        {
+          "name": "Get Brand by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/brands/{{brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "brands", "{{brand_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Brands",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json();",
+                  "  pm.environment.set('auth_token', data.data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', data.data.tokens.refresh_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Create Brand",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const data = pm.response.json();",
+                  "  pm.environment.set('new_brand_id', data.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Five Guys\",\n  \"logo_url\": \"https://example.com/fiveguys.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/brands",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands"]
+            }
+          }
+        },
+        {
+          "name": "Update Brand",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Five Guys Burgers & Fries\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/brands/{{new_brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands", "{{new_brand_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Brand",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/brands/{{new_brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands", "{{new_brand_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Brand — With Restaurants (expect 400)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/brands/{{brand_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands", "{{brand_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Upload Brand Logo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/brands/{{brand_id}}/logo",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands", "{{brand_id}}", "logo"]
+            }
+          }
+        },
+        {
+          "name": "Delete Brand Logo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/brands/{{brand_id}}/logo",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "brands", "{{brand_id}}", "logo"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

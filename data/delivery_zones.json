@@ -1,0 +1,68 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a1700",
+    "restaurant_id": "6993a9f77dcee68d585a0bed",
+    "city_id": "6993a9f77dcee68d585a0b9b",
+    "postal_codes": [
+      "8001",
+      "8002",
+      "8003",
+      "8004",
+      "8005",
+      "8006",
+      "8008",
+      "8032",
+      "8037",
+      "8038",
+      "8048",
+      "8049",
+      "8050",
+      "8051",
+      "8052",
+      "8600"
+    ],
+    "delivery_fee": 3.9,
+    "minimum_order": 20.0,
+    "estimated_delivery_minutes": { "min": 30, "max": 55 },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1701",
+    "restaurant_id": "6993a9f77dcee68d585a0be9",
+    "city_id": "6993a9f77dcee68d585a0b9b",
+    "postal_codes": [
+      "8001",
+      "8002",
+      "8003",
+      "8004",
+      "8005",
+      "8008",
+      "8032",
+      "8037",
+      "8038"
+    ],
+    "delivery_fee": 2.9,
+    "minimum_order": 15.0,
+    "estimated_delivery_minutes": { "min": 25, "max": 45 },
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1702",
+    "restaurant_id": "6993a9f77dcee68d585a0beb",
+    "city_id": "6993a9f77dcee68d585a0b9b",
+    "postal_codes": [
+      "8001",
+      "8003",
+      "8004",
+      "8005",
+      "8050",
+      "8051",
+      "8052",
+      "8304"
+    ],
+    "delivery_fee": 4.5,
+    "minimum_order": 25.0,
+    "estimated_delivery_minutes": { "min": 35, "max": 60 },
+    "is_active": true
+  }
+]

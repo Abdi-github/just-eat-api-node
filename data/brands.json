@@ -1,0 +1,128 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a0bd7",
+    "name": "Bäckerei Hug",
+    "slug": "backerei-hug",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/backerei-hug.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd8",
+    "name": "Domino's Pizza",
+    "slug": "dominos-pizza",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/dominos-pizza.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd9",
+    "name": "Brezelkönig",
+    "slug": "brezelkonig",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/brezelkonig.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bda",
+    "name": "Tenz Momo",
+    "slug": "tenz-momo",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/tenz-momo.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bdb",
+    "name": "Peking Garden",
+    "slug": "peking-garden",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/peking-garden.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bdc",
+    "name": "McDonald's",
+    "slug": "mcdonalds",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891916/justeat/cuisines/images/mcdonalds.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bdd",
+    "name": "Big Burger Kurier",
+    "slug": "big-burger-kurier",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891916/justeat/cuisines/images/big-burger-kurier.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bde",
+    "name": "Burger King",
+    "slug": "burger-king",
+    "logo_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891917/justeat/cuisines/images/burger-king.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bdf",
+    "name": "Giga Tacos",
+    "slug": "giga-tacos",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be0",
+    "name": "KFC",
+    "slug": "kfc",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be1",
+    "name": "Subway",
+    "slug": "subway",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be2",
+    "name": "Telpizza",
+    "slug": "telpizza",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be3",
+    "name": "Dunkin Donuts",
+    "slug": "dunkin-donuts",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be4",
+    "name": "Poulet Hochgenuss",
+    "slug": "poulet-hochgenuss",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be5",
+    "name": "Napule",
+    "slug": "napule",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be6",
+    "name": "Telepizza",
+    "slug": "telepizza",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be7",
+    "name": "Brezelkönig",
+    "slug": "brezelkoenig",
+    "logo_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0be8",
+    "name": "dean & david",
+    "slug": "dean-and-david",
+    "logo_url": null,
+    "is_active": true
+  }
+]

@@ -1,0 +1,551 @@
+{
+  "info": {
+    "name": "Just Eat API — Orders",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Order management endpoints for the Just Eat API — covers customer, restaurant, courier, and admin order flows"
+  },
+  "item": [
+    {
+      "name": "👤 Customer Orders",
+      "item": [
+        {
+          "name": "Place Order (Delivery)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"order_type\": \"delivery\",\n  \"delivery_address_id\": \"{{address_id}}\",\n  \"payment_method\": \"card\",\n  \"items\": [\n    { \"menu_item_id\": \"6993a9f77dcee68d585a0eb5\", \"quantity\": 2 },\n    { \"menu_item_id\": \"6993a9f77dcee68d585a0eb6\", \"quantity\": 1 }\n  ],\n  \"tip\": 3.50,\n  \"special_instructions\": \"Ring doorbell\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/orders",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Order status is PLACED', () => pm.expect(pm.response.json().data.status).to.eql('PLACED'));",
+                  "if (pm.response.json().data?.id) { pm.environment.set('order_id', pm.response.json().data.id); }",
+                  "if (pm.response.json().data?.order_number) { pm.environment.set('order_number', pm.response.json().data.order_number); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Place Order (Pickup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": \"{{restaurant_id}}\",\n  \"order_type\": \"pickup\",\n  \"payment_method\": \"cash\",\n  \"items\": [\n    { \"menu_item_id\": \"6993a9f77dcee68d585a0eb5\", \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/orders",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/orders/my",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders", "my"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Response has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Orders — Filtered",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/orders/my?status=DELIVERED&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders", "my"],
+              "query": [
+                { "key": "status", "value": "DELIVERED" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/orders/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders", "{{order_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has order data', () => pm.expect(pm.response.json().data).to.have.property('order_number'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellation_reason\": \"Changed my mind\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/orders/{{order_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["public", "orders", "{{order_id}}", "cancel"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Order is cancelled', () => pm.expect(pm.response.json().data.status).to.eql('CANCELLED'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🍽️ Restaurant Orders",
+      "item": [
+        {
+          "name": "Get Restaurant Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pagination meta', () => pm.expect(pm.response.json().meta).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Restaurant Orders — Filtered",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders?status=PLACED&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders"],
+              "query": [
+                { "key": "status", "value": "PLACED" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Active Restaurant Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/active",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "active"]
+            }
+          }
+        },
+        {
+          "name": "Accept Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACCEPTED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "{{order_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Order is accepted', () => pm.expect(pm.response.json().data.status).to.eql('ACCEPTED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"rejection_reason\": \"Out of ingredients\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Preparing",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PREPARING\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Ready",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"READY\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Assign Courier",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courier_id\": \"{{courier_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurant_id}}/orders/{{order_id}}/assign-courier",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurant_id}}", "orders", "{{order_id}}", "assign-courier"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚴 Courier Orders",
+      "item": [
+        {
+          "name": "Get Courier Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/orders",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Active Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courier/orders/active",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "orders", "active"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Picked Up",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PICKED_UP\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Mark as In Transit",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Delivered",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/courier/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["courier", "orders", "{{order_id}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Orders",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Orders — Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?status=DELIVERED",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [
+                { "key": "status", "value": "DELIVERED" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders — Filter by Restaurant",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?restaurant_id={{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [
+                { "key": "restaurant_id", "value": "{{restaurant_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders — Search by Order Number",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/orders?order_number=JE-2026",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders"],
+              "query": [
+                { "key": "order_number", "value": "JE-2026" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/orders/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Admin Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACCEPTED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "orders", "{{order_id}}", "status"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

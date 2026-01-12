@@ -1,0 +1,1285 @@
+{
+  "info": {
+    "_postman_id": "je-auth-collection-001",
+    "name": "Just Eat API - Auth Module",
+    "description": "Authentication & Authorization endpoints for the Just Eat API.\n\nIncludes: Register, Login, Token Refresh, Profile, Change Password, Logout, Email Verification, Password Reset, Applications (Restaurant Owner & Courier).\n\nTest credentials:\n- Super Admin: admin@justeat-clone.ch / Password123!\n- Customer: customer1@example.ch / Password123!\n- Restaurant Owner: owner.bigburger@example.ch / Password123!\n- Courier: courier1@justeat-clone.ch / Password123!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "item": [
+        {
+          "name": "Register - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.ch\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"Max\",\n  \"last_name\": \"Muster\",\n  \"phone\": \"+41 79 123 4567\",\n  \"preferred_language\": \"de\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register"]
+            },
+            "description": "Register a new customer account. Auto-assigns 'customer' role."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has tokens', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.tokens).to.have.property('access_token');",
+                  "  pm.expect(data.tokens).to.have.property('refresh_token');",
+                  "});",
+                  "pm.test('Has user', () => {",
+                  "  const user = pm.response.json().data.user;",
+                  "  pm.expect(user.email).to.eql('newuser@example.ch');",
+                  "  pm.expect(user.roles).to.include('customer');",
+                  "});",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('user_id', pm.response.json().data.user.id);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register - Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Duplicate\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register"]
+            },
+            "description": "Attempt to register with an existing email. Expects 409 conflict."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);",
+                  "pm.test('Error message', () => pm.expect(pm.response.json().message).to.include('already registered'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register - Validation Error (Weak Password)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"weak@example.ch\",\n  \"password\": \"123\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"Weak\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register"]
+            },
+            "description": "Attempt to register with a weak password. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register - Validation Error (Missing Fields)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"missing@example.ch\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register"]
+            },
+            "description": "Attempt to register with missing required fields. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has validation errors', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "User registration endpoints"
+    },
+    {
+      "name": "Login",
+      "item": [
+        {
+          "name": "Login - Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as customer. Saves tokens to environment."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has customer role', () => {",
+                  "  pm.expect(pm.response.json().data.user.roles).to.include('customer');",
+                  "});",
+                  "pm.test('Has permissions', () => {",
+                  "  pm.expect(pm.response.json().data.user.permissions.length).to.be.greaterThan(0);",
+                  "});",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('user_id', pm.response.json().data.user.id);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Super Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as super admin. Has manage-level permissions."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has super_admin role', () => {",
+                  "  pm.expect(pm.response.json().data.user.roles).to.include('super_admin');",
+                  "});",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('admin_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('user_id', pm.response.json().data.user.id);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Restaurant Owner",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner.bigburger@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as restaurant owner."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has restaurant_owner role', () => {",
+                  "  pm.expect(pm.response.json().data.user.roles).to.include('restaurant_owner');",
+                  "});",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('owner_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('user_id', pm.response.json().data.user.id);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Courier",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"courier1@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as courier."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has courier role', () => {",
+                  "  pm.expect(pm.response.json().data.user.roles).to.include('courier');",
+                  "});",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('courier_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('user_id', pm.response.json().data.user.id);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Invalid Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"WrongPassword!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login with wrong password. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);",
+                  "pm.test('Error message', () => pm.expect(pm.response.json().message).to.include('Invalid'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Nonexistent Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login with unregistered email. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Validation Error (Missing Fields)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login without password field. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - With Language Header (FR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-language", "value": "fr" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login with French language header. Response messages will be in French."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "// Save tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('auth_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.tokens.refresh_token);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Login endpoints — test with different roles and error cases"
+    },
+    {
+      "name": "Token Refresh",
+      "item": [
+        {
+          "name": "Refresh Token - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "refresh"]
+            },
+            "description": "Refresh access token using a valid refresh token. Returns new token pair."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has new tokens', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.property('access_token');",
+                  "  pm.expect(data).to.have.property('refresh_token');",
+                  "});",
+                  "// Update tokens",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('auth_token', pm.response.json().data.access_token);",
+                  "  pm.environment.set('refresh_token', pm.response.json().data.refresh_token);",
+                  "  pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token - Invalid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"invalid-token-string\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "refresh"]
+            },
+            "description": "Attempt to refresh with an invalid token. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token - Missing Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "refresh"]
+            },
+            "description": "Attempt to refresh without providing a token. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Token refresh endpoints"
+    },
+    {
+      "name": "Get Profile",
+      "item": [
+        {
+          "name": "Get Profile - Success",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Get the authenticated user's profile. Requires valid access token."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has user data', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.property('email');",
+                  "  pm.expect(data).to.have.property('roles');",
+                  "  pm.expect(data).to.have.property('permissions');",
+                  "});",
+                  "pm.test('No sensitive data', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.not.have.property('password_hash');",
+                  "  pm.expect(data).to.not.have.property('refresh_token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile - No Auth Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Get profile without auth token. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile - Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer invalid.token.here" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Get profile with an invalid token. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Get current user profile"
+    },
+    {
+      "name": "Update Profile",
+      "item": [
+        {
+          "name": "Update Profile - Success",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Name\",\n  \"phone\": \"+41 79 999 8888\",\n  \"preferred_language\": \"fr\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Update the authenticated user's profile. Only updatable fields are accepted."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Profile updated', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.first_name).to.eql('Updated');",
+                  "  pm.expect(data.last_name).to.eql('Name');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Profile - Invalid Language",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferred_language\": \"xx\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Update profile with invalid language. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Profile - No Auth",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Hacker\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Update profile without auth. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Update user profile"
+    },
+    {
+      "name": "Change Password",
+      "item": [
+        {
+          "name": "Change Password - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewPassword456@\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "change-password"]
+            },
+            "description": "Change password for authenticated user. Invalidates all refresh tokens."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password - Wrong Current Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"WrongPassword!\",\n  \"new_password\": \"NewPassword456@\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "change-password"]
+            },
+            "description": "Change password with wrong current password. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password - Weak New Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "change-password"]
+            },
+            "description": "Change password with a weak new password. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Change password for authenticated user"
+    },
+    {
+      "name": "Email Verification",
+      "item": [
+        {
+          "name": "Verify Email - Invalid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"0000000000000000000000000000000000000000000000000000000000000000\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/verify-email",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "verify-email"]
+            },
+            "description": "Verify email with an invalid/expired token. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);",
+                  "pm.test('Error message', () => pm.expect(pm.response.json().message).to.include('Invalid'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend Verification Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/resend-verification",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "resend-verification"]
+            },
+            "description": "Resend verification email. Returns 200 regardless (to prevent email enumeration)."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Email verification flow"
+    },
+    {
+      "name": "Password Reset",
+      "item": [
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "forgot-password"]
+            },
+            "description": "Request a password reset link. Returns 200 regardless (to prevent email enumeration). Check API logs for the reset token."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reset Password - Invalid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n  \"new_password\": \"ResetPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "reset-password"]
+            },
+            "description": "Reset password with an invalid token. Expects 400."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Password reset flow — forgot password + reset with token"
+    },
+    {
+      "name": "Logout",
+      "item": [
+        {
+          "name": "Logout - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "logout"]
+            },
+            "description": "Logout the current user. Blacklists the access token in Redis."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Message', () => pm.expect(pm.response.json().message).to.include('Logout'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout - Use Blacklisted Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "me"]
+            },
+            "description": "Try to use the token after logout. Expects 401 (token revoked)."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Token revoked', () => pm.expect(pm.response.json().message).to.include('revoked'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout - No Auth",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "logout"]
+            },
+            "description": "Logout without auth token. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Logout and token blacklisting"
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Apply as Restaurant Owner - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newowner@example.ch\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"Hans\",\n  \"last_name\": \"Müller\",\n  \"phone\": \"+41 79 234 5678\",\n  \"preferred_language\": \"de\",\n  \"restaurant_name\": \"Gasthaus Müller\",\n  \"restaurant_address\": \"Bahnhofstrasse 42\",\n  \"restaurant_postal_code\": \"8001\",\n  \"restaurant_city_id\": \"{{city_id}}\",\n  \"restaurant_canton_id\": \"{{canton_id}}\",\n  \"restaurant_phone\": \"+41 44 567 8901\",\n  \"restaurant_email\": \"info@gasthaus-mueller.ch\",\n  \"application_note\": \"Traditional Swiss cuisine restaurant in Zurich city center.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register-restaurant",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register-restaurant"]
+            },
+            "description": "Apply as a restaurant owner. Creates user with 'pending_approval' status and a draft restaurant. Returns tokens + user."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has tokens', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.tokens).to.have.property('access_token');",
+                  "});",
+                  "pm.test('Message mentions pending', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('pending');",
+                  "});",
+                  "if (pm.response.json().data) {",
+                  "  pm.environment.set('applicant_token', pm.response.json().data.tokens.access_token);",
+                  "  pm.environment.set('applicant_id', pm.response.json().data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Apply as Courier - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newcourier@example.ch\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"Luca\",\n  \"last_name\": \"Rossi\",\n  \"phone\": \"+41 78 345 6789\",\n  \"preferred_language\": \"it\",\n  \"vehicle_type\": \"bicycle\",\n  \"date_of_birth\": \"1998-06-15\",\n  \"application_note\": \"Experienced bicycle courier, available full-time in Zurich.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/register-courier",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "register-courier"]
+            },
+            "description": "Apply as a courier. Creates user with 'pending_approval' status and courier role pending. Returns tokens + user."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has tokens', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.tokens).to.have.property('access_token');",
+                  "});",
+                  "pm.test('Message mentions pending', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('pending');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Application Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{applicant_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/auth/application-status",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "application-status"]
+            },
+            "description": "Check the current application status for the authenticated user. Returns status, type, and any associated restaurant info."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has application status', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.property('application_status');",
+                  "  pm.expect(data).to.have.property('application_type');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Application Status - No Auth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/auth/application-status",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "application-status"]
+            },
+            "description": "Attempt to check application status without auth. Expects 401."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Application endpoints for restaurant owner and courier registration with approval workflow."
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4005/api/v1",
+      "type": "string"
+    }
+  ]
+}

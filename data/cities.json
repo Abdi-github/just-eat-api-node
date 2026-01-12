@@ -1,0 +1,90 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a0b9b",
+    "name": {
+      "en": "Zurich",
+      "fr": "Zurich",
+      "de": "Zürich",
+      "it": "Zurigo"
+    },
+    "slug": "zurich",
+    "canton_id": "6993a9f77dcee68d585a0b9a",
+    "postal_codes": [
+      8001, 8002, 8003, 8004, 8005, 8006, 8008, 8032, 8037, 8038, 8041, 8044,
+      8045, 8046, 8047, 8048, 8049, 8050, 8051, 8052, 8053, 8055, 8057, 8064,
+      8090, 8091, 8092, 8093
+    ],
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b9c",
+    "name": {
+      "en": "Bern",
+      "fr": "Berne",
+      "de": "Bern",
+      "it": "Berna"
+    },
+    "slug": "bern-bern",
+    "canton_id": "6993a9f77dcee68d585a0b96",
+    "postal_codes": [
+      3000, 3001, 3003, 3004, 3005, 3006, 3007, 3008, 3010, 3011, 3012, 3013,
+      3014, 3015, 3018, 3019, 3020, 3024, 3027, 3029, 3030
+    ],
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b9d",
+    "name": {
+      "en": "Lausanne",
+      "fr": "Lausanne",
+      "de": "Lausanne",
+      "it": "Losanna"
+    },
+    "slug": "lausanne",
+    "canton_id": "6993a9f77dcee68d585a0b99",
+    "postal_codes": [
+      1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1010, 1011, 1012, 1014,
+      1015, 1017, 1018, 1019
+    ],
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b9e",
+    "name": {
+      "en": "Fribourg",
+      "fr": "Fribourg",
+      "de": "Freiburg",
+      "it": "Friburgo"
+    },
+    "slug": "fribourg",
+    "canton_id": "6993a9f77dcee68d585a0b97",
+    "postal_codes": [1700, 1701, 1707, 1708, 1722],
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0b9f",
+    "name": {
+      "en": "Biel",
+      "fr": "Bienne",
+      "de": "Biel",
+      "it": "Bienne"
+    },
+    "slug": "biel",
+    "canton_id": "6993a9f77dcee68d585a0b96",
+    "postal_codes": [2500, 2501, 2502, 2503, 2504, 2505, 2510],
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0ba0",
+    "name": {
+      "en": "Neuchâtel",
+      "fr": "Neuchâtel",
+      "de": "Neuenburg",
+      "it": "Neuchâtel"
+    },
+    "slug": "neuchatel",
+    "canton_id": "6993a9f77dcee68d585a0b98",
+    "postal_codes": [2000, 2001, 2002, 2010, 2034, 2035, 2036, 2042, 2067],
+    "is_active": true
+  }
+]

@@ -1,0 +1,119 @@
+services:
+  # ── API Server ──
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: justeat_api
+    restart: unless-stopped
+    ports:
+      - '4011:4005'
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - justeat_network
+
+  # ── MongoDB ──
+  mongodb:
+    image: mongo:7.0
+    container_name: justeat_mongodb
+    restart: unless-stopped
+    ports:
+      - '27022:27017'
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    environment:
+      - MONGO_INITDB_DATABASE=justeat_dev
+    networks:
+      - justeat_network
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Redis ──
+  redis:
+    image: redis:7-alpine
+    container_name: justeat_redis
+    restart: unless-stopped
+    ports:
+      - '6383:6379'
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction
+    networks:
+      - justeat_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── MongoDB Express (Database UI) ──
+  mongo-express:
+    image: mongo-express:1.0
+    container_name: justeat_mongo_express
+    restart: unless-stopped
+    ports:
+      - '8086:8081'
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
+      - ME_CONFIG_BASICAUTH=false
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - justeat_network
+
+  # ── Redis Commander (Redis UI) ──
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: justeat_redis_commander
+    restart: unless-stopped
+    ports:
+      - '8087:8081'
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - justeat_network
+
+  # ── Mailpit (Email Testing) ──
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: justeat_mailpit
+    restart: unless-stopped
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+    networks:
+      - justeat_network
+
+networks:
+  justeat_network:
+    driver: bridge
+    name: justeat_network
+
+volumes:
+  mongodb_data:
+    name: justeat_mongodb_data
+  mongodb_config:
+    name: justeat_mongodb_config
+  redis_data:
+    name: justeat_redis_data

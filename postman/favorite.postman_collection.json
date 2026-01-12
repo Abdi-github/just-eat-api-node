@@ -1,0 +1,83 @@
+{
+  "info": {
+    "name": "❤️ Favorites — Just Eat API",
+    "description": "Favorite module — toggle, list, check, and remove favorite restaurants. Customer-only feature.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Toggle Favorite (Add)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"restaurant_id\": \"{{restaurant_id}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/public/favorites/toggle",
+          "host": ["{{base_url}}"],
+          "path": ["public", "favorites", "toggle"]
+        },
+        "description": "Toggle a restaurant in favorites. Adds if not favorited, removes if already favorited."
+      }
+    },
+    {
+      "name": "List My Favorites",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/public/favorites?page=1&limit=20",
+          "host": ["{{base_url}}"],
+          "path": ["public", "favorites"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "20" }
+          ]
+        },
+        "description": "Get all favorite restaurants for the authenticated customer."
+      }
+    },
+    {
+      "name": "Check Favorite Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/public/favorites/check/{{restaurant_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["public", "favorites", "check", "{{restaurant_id}}"]
+        },
+        "description": "Check if a specific restaurant is in the user's favorites."
+      }
+    },
+    {
+      "name": "Remove Favorite",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/public/favorites/{{restaurant_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["public", "favorites", "{{restaurant_id}}"]
+        },
+        "description": "Remove a restaurant from favorites."
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "customer_token", "value": "" },
+    { "key": "restaurant_id", "value": "6993a9f77dcee68d585a0bed" }
+  ]
+}

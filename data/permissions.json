@@ -1,0 +1,442 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a1200",
+    "resource": "restaurants",
+    "action": "create",
+    "description": "Create new restaurants"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1201",
+    "resource": "restaurants",
+    "action": "read",
+    "description": "View restaurant details"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1202",
+    "resource": "restaurants",
+    "action": "update",
+    "description": "Modify restaurant details"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1203",
+    "resource": "restaurants",
+    "action": "delete",
+    "description": "Remove restaurants"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1204",
+    "resource": "restaurants",
+    "action": "approve",
+    "description": "Approve pending restaurants"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1205",
+    "resource": "restaurants",
+    "action": "reject",
+    "description": "Reject restaurant applications"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1206",
+    "resource": "restaurants",
+    "action": "publish",
+    "description": "Publish approved restaurants"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1207",
+    "resource": "restaurants",
+    "action": "archive",
+    "description": "Archive/deactivate restaurants"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1208",
+    "resource": "restaurants",
+    "action": "manage",
+    "description": "Full control over restaurants"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1210",
+    "resource": "menu_categories",
+    "action": "create",
+    "description": "Create menu categories"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1211",
+    "resource": "menu_categories",
+    "action": "read",
+    "description": "View menu categories"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1212",
+    "resource": "menu_categories",
+    "action": "update",
+    "description": "Modify menu categories"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1213",
+    "resource": "menu_categories",
+    "action": "delete",
+    "description": "Remove menu categories"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1220",
+    "resource": "menu_items",
+    "action": "create",
+    "description": "Create menu items"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1221",
+    "resource": "menu_items",
+    "action": "read",
+    "description": "View menu items"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1222",
+    "resource": "menu_items",
+    "action": "update",
+    "description": "Modify menu items"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1223",
+    "resource": "menu_items",
+    "action": "delete",
+    "description": "Remove menu items"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1230",
+    "resource": "orders",
+    "action": "create",
+    "description": "Place orders"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1231",
+    "resource": "orders",
+    "action": "read",
+    "description": "View order details"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1232",
+    "resource": "orders",
+    "action": "update",
+    "description": "Update order status"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1233",
+    "resource": "orders",
+    "action": "delete",
+    "description": "Cancel/remove orders"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1234",
+    "resource": "orders",
+    "action": "manage",
+    "description": "Full control over orders"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1240",
+    "resource": "reviews",
+    "action": "create",
+    "description": "Post reviews"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1241",
+    "resource": "reviews",
+    "action": "read",
+    "description": "View reviews"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1242",
+    "resource": "reviews",
+    "action": "update",
+    "description": "Edit own reviews"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1243",
+    "resource": "reviews",
+    "action": "delete",
+    "description": "Delete reviews"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1244",
+    "resource": "reviews",
+    "action": "approve",
+    "description": "Approve reviews"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1245",
+    "resource": "reviews",
+    "action": "reject",
+    "description": "Reject reviews"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1250",
+    "resource": "users",
+    "action": "create",
+    "description": "Create users"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1251",
+    "resource": "users",
+    "action": "read",
+    "description": "View user profiles"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1252",
+    "resource": "users",
+    "action": "update",
+    "description": "Edit user profiles"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1253",
+    "resource": "users",
+    "action": "delete",
+    "description": "Remove users"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1254",
+    "resource": "users",
+    "action": "manage",
+    "description": "Full control over users"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1260",
+    "resource": "cuisines",
+    "action": "create",
+    "description": "Create cuisines"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1261",
+    "resource": "cuisines",
+    "action": "read",
+    "description": "View cuisines"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1262",
+    "resource": "cuisines",
+    "action": "update",
+    "description": "Modify cuisines"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1263",
+    "resource": "cuisines",
+    "action": "delete",
+    "description": "Remove cuisines"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1264",
+    "resource": "cuisines",
+    "action": "manage",
+    "description": "Full control over cuisines"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1270",
+    "resource": "brands",
+    "action": "create",
+    "description": "Create brands"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1271",
+    "resource": "brands",
+    "action": "read",
+    "description": "View brands"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1272",
+    "resource": "brands",
+    "action": "update",
+    "description": "Modify brands"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1273",
+    "resource": "brands",
+    "action": "delete",
+    "description": "Remove brands"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1274",
+    "resource": "brands",
+    "action": "manage",
+    "description": "Full control over brands"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1280",
+    "resource": "locations",
+    "action": "create",
+    "description": "Create locations (cities/cantons)"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1281",
+    "resource": "locations",
+    "action": "read",
+    "description": "View locations"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1282",
+    "resource": "locations",
+    "action": "update",
+    "description": "Modify locations"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1283",
+    "resource": "locations",
+    "action": "delete",
+    "description": "Remove locations"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1284",
+    "resource": "locations",
+    "action": "manage",
+    "description": "Full control over locations"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a1290",
+    "resource": "deliveries",
+    "action": "create",
+    "description": "Create delivery assignments"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1291",
+    "resource": "deliveries",
+    "action": "read",
+    "description": "View delivery details"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1292",
+    "resource": "deliveries",
+    "action": "update",
+    "description": "Update delivery status"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a1293",
+    "resource": "deliveries",
+    "action": "manage",
+    "description": "Full control over deliveries"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a12a0",
+    "resource": "promotions",
+    "action": "create",
+    "description": "Create promotions/coupons"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12a1",
+    "resource": "promotions",
+    "action": "read",
+    "description": "View promotions"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12a2",
+    "resource": "promotions",
+    "action": "update",
+    "description": "Modify promotions"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12a3",
+    "resource": "promotions",
+    "action": "delete",
+    "description": "Remove promotions"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12a4",
+    "resource": "promotions",
+    "action": "manage",
+    "description": "Full control over promotions"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a12b0",
+    "resource": "favorites",
+    "action": "create",
+    "description": "Add to favorites"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12b1",
+    "resource": "favorites",
+    "action": "read",
+    "description": "View favorites"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12b2",
+    "resource": "favorites",
+    "action": "delete",
+    "description": "Remove from favorites"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a12c0",
+    "resource": "addresses",
+    "action": "create",
+    "description": "Create delivery addresses"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12c1",
+    "resource": "addresses",
+    "action": "read",
+    "description": "View saved addresses"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12c2",
+    "resource": "addresses",
+    "action": "update",
+    "description": "Modify addresses"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12c3",
+    "resource": "addresses",
+    "action": "delete",
+    "description": "Remove addresses"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a12d0",
+    "resource": "analytics",
+    "action": "read",
+    "description": "View platform analytics"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12d1",
+    "resource": "analytics",
+    "action": "manage",
+    "description": "Full access to analytics"
+  },
+
+  {
+    "_id": "6993a9f77dcee68d585a12e0",
+    "resource": "notifications",
+    "action": "read",
+    "description": "View own notifications"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12e1",
+    "resource": "notifications",
+    "action": "create",
+    "description": "Create notifications"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12e2",
+    "resource": "notifications",
+    "action": "update",
+    "description": "Mark notifications as read"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12e3",
+    "resource": "notifications",
+    "action": "delete",
+    "description": "Delete own notifications"
+  },
+  {
+    "_id": "6993a9f77dcee68d585a12e4",
+    "resource": "notifications",
+    "action": "manage",
+    "description": "Full access to notifications (admin)"
+  }
+]

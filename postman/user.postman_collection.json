@@ -1,0 +1,252 @@
+{
+  "info": {
+    "_postman_id": "je-user-collection-001",
+    "name": "Just Eat API - User Module",
+    "description": "User management endpoints for the just-eat.ch clone API.\n\nIncludes:\n- Self-service profile management (authenticated users)\n- Admin user management (CRUD, activate/suspend, role management)\n\nBase URL: http://localhost:4005/api/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Setup - Login Admin",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}" },
+        "url": { "raw": "{{base_url}}/public/auth/login", "host": ["{{base_url}}"], "path": ["public", "auth", "login"] }
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "if (pm.response.json().data) { pm.environment.set('admin_token', pm.response.json().data.tokens.access_token); pm.environment.set('token_expiry', Date.now() + 14 * 60 * 1000); }"], "type": "text/javascript" } }]
+    },
+    {
+      "name": "Setup - Login Customer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}" },
+        "url": { "raw": "{{base_url}}/public/auth/login", "host": ["{{base_url}}"], "path": ["public", "auth", "login"] }
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "if (pm.response.json().data) { pm.environment.set('auth_token', pm.response.json().data.tokens.access_token); pm.environment.set('user_id', pm.response.json().data.user.id); }"], "type": "text/javascript" } }]
+    },
+    {
+      "name": "👤 Self-Service",
+      "item": [
+        {
+          "name": "Get Own Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/public/users/profile", "host": ["{{base_url}}"], "path": ["public", "users", "profile"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has profile fields', () => { const d = pm.response.json().data; pm.expect(d).to.have.property('email'); pm.expect(d).to.have.property('first_name'); pm.expect(d).to.have.property('roles'); pm.expect(d).to.have.property('permissions'); pm.expect(d).to.not.have.property('password_hash'); });"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update Own Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"first_name\": \"Thomas\",\n  \"last_name\": \"Weber-Updated\",\n  \"phone\": \"+41 78 300 9999\",\n  \"preferred_language\": \"fr\"\n}" },
+            "url": { "raw": "{{base_url}}/public/users/profile", "host": ["{{base_url}}"], "path": ["public", "users", "profile"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Updated', () => pm.expect(pm.response.json().data.last_name).to.eql('Weber-Updated'));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewSecurePass456!\"\n}" },
+            "url": { "raw": "{{base_url}}/public/users/password", "host": ["{{base_url}}"], "path": ["public", "users", "password"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/public/users/settings", "host": ["{{base_url}}"], "path": ["public", "users", "settings"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has settings', () => { pm.expect(pm.response.json().data).to.have.property('notification_preferences'); pm.expect(pm.response.json().data).to.have.property('preferred_language'); });"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email_order_updates\": true,\n  \"email_promotions\": true,\n  \"email_newsletter\": false,\n  \"push_enabled\": true\n}" },
+            "url": { "raw": "{{base_url}}/public/users/settings", "host": ["{{base_url}}"], "path": ["public", "users", "settings"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Deactivate Account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/public/users/deactivate", "host": ["{{base_url}}"], "path": ["public", "users", "deactivate"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/public/users/avatar", "host": ["{{base_url}}"], "path": ["public", "users", "avatar"] }
+          }
+        },
+        {
+          "name": "Delete Avatar",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/public/users/avatar", "host": ["{{base_url}}"], "path": ["public", "users", "avatar"] }
+          }
+        }
+      ],
+      "description": "Self-service user endpoints (any authenticated user)"
+    },
+    {
+      "name": "⚙️ Admin User Management",
+      "item": [
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/statistics", "host": ["{{base_url}}"], "path": ["admin", "users", "statistics"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has statistics', () => { const d = pm.response.json().data; pm.expect(d).to.have.property('total'); pm.expect(d).to.have.property('by_status'); pm.expect(d).to.have.property('active'); pm.expect(d).to.have.property('verified'); });"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users?page=1&limit=10", "host": ["{{base_url}}"], "path": ["admin", "users"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Paginated', () => pm.expect(pm.response.json().meta).to.have.property('total'));", "if (pm.response.json().data && pm.response.json().data.length > 0) { pm.environment.set('managed_user_id', pm.response.json().data[0].id); }"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "List Users - Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users?status=active", "host": ["{{base_url}}"], "path": ["admin", "users"], "query": [{ "key": "status", "value": "active" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "List Users - Search by Name",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users?search=Thomas", "host": ["{{base_url}}"], "path": ["admin", "users"], "query": [{ "key": "search", "value": "Thomas" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/{{managed_user_id}}", "host": ["{{base_url}}"], "path": ["admin", "users", "{{managed_user_id}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has full data', () => { const d = pm.response.json().data; pm.expect(d).to.have.property('roles'); pm.expect(d).to.have.property('permissions'); });"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin-created@example.ch\",\n  \"password\": \"SecurePass1!\",\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Created\",\n  \"phone\": \"+41 79 000 0001\",\n  \"preferred_language\": \"de\",\n  \"status\": \"active\",\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/admin/users", "host": ["{{base_url}}"], "path": ["admin", "users"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "if (pm.response.json().data) { pm.environment.set('created_user_id', pm.response.json().data.id); }"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"ByAdmin\",\n  \"is_verified\": true\n}" },
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Updated', () => pm.expect(pm.response.json().data.first_name).to.eql('Updated'));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Suspend User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}/suspend", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}", "suspend"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Suspended', () => pm.expect(pm.response.json().data.status).to.eql('suspended'));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}/activate", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}", "activate"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Activated', () => pm.expect(pm.response.json().data.status).to.eql('active'));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Assign Role to User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"restaurant_owner\"\n}" },
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}/roles", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}", "roles"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Remove Role from User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}/roles/restaurant_owner", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}", "roles", "restaurant_owner"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users/{{created_user_id}}", "host": ["{{base_url}}"], "path": ["admin", "users", "{{created_user_id}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"], "type": "text/javascript" } }]
+        },
+        {
+          "name": "RBAC - Customer Cannot List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/admin/users", "host": ["{{base_url}}"], "path": ["admin", "users"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"], "type": "text/javascript" } }]
+        }
+      ],
+      "description": "Admin user management (requires users:* permissions)"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4005/api/v1",
+      "type": "string"
+    }
+  ]
+}

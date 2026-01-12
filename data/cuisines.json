@@ -1,0 +1,554 @@
+[
+  {
+    "_id": "6993a9f77dcee68d585a0ba9",
+    "name": {
+      "en": "American Food",
+      "fr": "Repas americain",
+      "de": "Amerikanisches Essen",
+      "it": "Cibo Americano"
+    },
+    "slug": "american-food",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771925110/justeat/cuisines/images/american-food.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0baa",
+    "name": {
+      "en": "Dumplings",
+      "fr": "Dumplings",
+      "de": "Dumplings",
+      "it": "Dumplings"
+    },
+    "slug": "dumplings",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/dumplings.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bab",
+    "name": {
+      "en": "African food",
+      "fr": "Africain",
+      "de": "Afrikanisches",
+      "it": "Africano"
+    },
+    "slug": "african-food",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/african-food.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bac",
+    "name": {
+      "en": "Greek",
+      "fr": "Grec",
+      "de": "Griechisches",
+      "it": "Greco"
+    },
+    "slug": "gyros",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/gyros.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bad",
+    "name": {
+      "en": "Sandwiches",
+      "fr": "Sandwiches",
+      "de": "Sandwiches",
+      "it": "Sandwiches"
+    },
+    "slug": "sandwiches",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/sandwiches.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bae",
+    "name": {
+      "en": "Italian",
+      "fr": "Italien",
+      "de": "Italienisch",
+      "it": "Italiano"
+    },
+    "slug": "italian",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/italian.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0baf",
+    "name": {
+      "en": "Chinese",
+      "fr": "Chinois",
+      "de": "Chinesisch",
+      "it": "Cinese"
+    },
+    "slug": "chinese",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/chinese.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb0",
+    "name": {
+      "en": "Indian",
+      "fr": "Indien",
+      "de": "Indisch",
+      "it": "Indiano"
+    },
+    "slug": "indian",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891904/justeat/cuisines/images/indian.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb1",
+    "name": {
+      "en": "Snacks",
+      "fr": "Snacks",
+      "de": "Snacks",
+      "it": "Snack"
+    },
+    "slug": "snacks",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891909/justeat/cuisines/images/snacks.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb2",
+    "name": {
+      "en": "Thai",
+      "fr": "Thailandais",
+      "de": "Thailändisch",
+      "it": "Thailandese"
+    },
+    "slug": "thai",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/thai.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb3",
+    "name": {
+      "en": "Sushi",
+      "fr": "Sushi",
+      "de": "Sushi",
+      "it": "Sushi"
+    },
+    "slug": "sushi",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/sushi.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb4",
+    "name": {
+      "en": "Vietnamese",
+      "fr": "Vietnamien",
+      "de": "Vietnamesisch",
+      "it": "Vietnamita"
+    },
+    "slug": "vietnamese",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891909/justeat/cuisines/images/vietnamese.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb5",
+    "name": {
+      "en": "Mexican",
+      "fr": "Mexicain",
+      "de": "Mexikanisch",
+      "it": "Messicano"
+    },
+    "slug": "mexican",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/mexican.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb6",
+    "name": {
+      "en": "Asian",
+      "fr": "Asiatique",
+      "de": "Asiatisches",
+      "it": "Asiatico"
+    },
+    "slug": "asian",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/asian.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb7",
+    "name": {
+      "en": "Burger",
+      "fr": "Burger",
+      "de": "Burger",
+      "it": "Burger"
+    },
+    "slug": "burger",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/burger.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb8",
+    "name": {
+      "en": "Kebab",
+      "fr": "Kebab",
+      "de": "Kebab",
+      "it": "Kebab"
+    },
+    "slug": "kebab",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/kebab.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bb9",
+    "name": {
+      "en": "Vegetarian",
+      "fr": "Vegetarien",
+      "de": "Vegetarisches",
+      "it": "Vegetariano"
+    },
+    "slug": "vegetarian",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/vegetarian.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bba",
+    "name": {
+      "en": "Lebanese",
+      "fr": "Libanais",
+      "de": "Libanesisches",
+      "it": "Libanese"
+    },
+    "slug": "lebanese",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/lebanese.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bbb",
+    "name": {
+      "en": "Breakfast",
+      "fr": "Petit Dejeuner",
+      "de": "Fruhstuck",
+      "it": "Colazione"
+    },
+    "slug": "breakfast",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/breakfast.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bbc",
+    "name": {
+      "en": "Vegan",
+      "fr": "Vegan",
+      "de": "Vegan",
+      "it": "Vegano"
+    },
+    "slug": "vegan",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/vegan.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bbd",
+    "name": {
+      "en": "Chicken",
+      "fr": "Poulet",
+      "de": "Hühnchen",
+      "it": "Pollo"
+    },
+    "slug": "chicken",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/chicken.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bbe",
+    "name": {
+      "en": "Turkish",
+      "fr": "Turc",
+      "de": "Türkisches",
+      "it": "Turco"
+    },
+    "slug": "turkish",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891909/justeat/cuisines/images/turkish.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bbf",
+    "name": {
+      "en": "Healthy food",
+      "fr": "Aliments Sains",
+      "de": "Gesundes essen",
+      "it": "Cibo sano"
+    },
+    "slug": "healthy",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891908/justeat/cuisines/images/healthy.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc0",
+    "name": {
+      "en": "Groceries",
+      "fr": "Courses",
+      "de": "Lebensmittel",
+      "it": "Spesa online"
+    },
+    "slug": "groceries",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/groceries.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc1",
+    "name": {
+      "en": "Swiss",
+      "fr": "Suisse",
+      "de": "Schweizer",
+      "it": "Svizzero"
+    },
+    "slug": "swiss",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/swiss.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc2",
+    "name": {
+      "en": "Fish",
+      "fr": "Poisson",
+      "de": "Fisch",
+      "it": "Pesce"
+    },
+    "slug": "fish",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/fish.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc3",
+    "name": {
+      "en": "Desserts",
+      "fr": "Pause sucree",
+      "de": "Nachspeisen",
+      "it": "Dolci"
+    },
+    "slug": "desserts",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/desserts.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc4",
+    "name": {
+      "en": "Balkan",
+      "fr": "Balkan",
+      "de": "Balkan",
+      "it": "Balkan"
+    },
+    "slug": "balkan",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/balkan.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc5",
+    "name": {
+      "en": "Salads",
+      "fr": "Salades",
+      "de": "Salate",
+      "it": "Insalate"
+    },
+    "slug": "salads",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/salads.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc6",
+    "name": {
+      "en": "Steak",
+      "fr": "Steak",
+      "de": "Steak",
+      "it": "Steak"
+    },
+    "slug": "steak",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/steak.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc7",
+    "name": {
+      "en": "Coffee",
+      "fr": "Cafe",
+      "de": "Kaffee",
+      "it": "Caffe"
+    },
+    "slug": "coffee",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/coffee.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc8",
+    "name": {
+      "en": "Soups",
+      "fr": "Soupes",
+      "de": "Suppen",
+      "it": "Zuppe"
+    },
+    "slug": "soups",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771925112/justeat/cuisines/images/soups.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bc9",
+    "name": {
+      "en": "Pasta",
+      "fr": "Pates",
+      "de": "Pasta",
+      "it": "Pasta"
+    },
+    "slug": "pasta",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/pasta.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bca",
+    "name": {
+      "en": "Bäckerei Hug",
+      "fr": "Bäckerei Hug",
+      "de": "Bäckerei Hug",
+      "it": "Bäckerei Hug"
+    },
+    "slug": "backerei-hug",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/backerei-hug.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bcb",
+    "name": {
+      "en": "Domino's Pizza",
+      "fr": "Domino's Pizza",
+      "de": "Domino's Pizza",
+      "it": "Domino's Pizza"
+    },
+    "slug": "dominos-pizza",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/dominos-pizza.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bcc",
+    "name": {
+      "en": "Brezelkönig",
+      "fr": "Brezelkönig",
+      "de": "Brezelkönig",
+      "it": "Brezelkönig"
+    },
+    "slug": "brezelkonig",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/brezelkonig.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bcd",
+    "name": {
+      "en": "Tenz Momo",
+      "fr": "Tenz Momo",
+      "de": "Tenz Momo",
+      "it": "Tenz Momo"
+    },
+    "slug": "tenz-momo",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/tenz-momo.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bce",
+    "name": {
+      "en": "Peking Garden",
+      "fr": "Peking Garden",
+      "de": "Peking Garden",
+      "it": "Peking Garden"
+    },
+    "slug": "peking-garden",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891912/justeat/cuisines/images/peking-garden.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bcf",
+    "name": {
+      "en": "McDonald's",
+      "fr": "McDonald's",
+      "de": "McDonald's",
+      "it": "McDonald's"
+    },
+    "slug": "mcdonalds",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891916/justeat/cuisines/images/mcdonalds.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd0",
+    "name": {
+      "en": "Big Burger Kurier",
+      "fr": "Big Burger Kurier",
+      "de": "Big Burger Kurier",
+      "it": "Big Burger Kurier"
+    },
+    "slug": "big-burger-kurier",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891916/justeat/cuisines/images/big-burger-kurier.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd1",
+    "name": {
+      "en": "Burger King®",
+      "fr": "Burger King®",
+      "de": "Burger King®",
+      "it": "Burger King®"
+    },
+    "slug": "burger-king",
+    "image_url": "https://res.cloudinary.com/dzyyygr1x/image/upload/v1771891917/justeat/cuisines/images/burger-king.webp",
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd2",
+    "name": {
+      "en": "Giga Tacos",
+      "fr": "Giga Tacos",
+      "de": "Giga Tacos",
+      "it": "Giga Tacos"
+    },
+    "slug": "giga-tacos",
+    "image_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd3",
+    "name": {
+      "en": "KFC",
+      "fr": "KFC",
+      "de": "KFC",
+      "it": "KFC"
+    },
+    "slug": "kfc",
+    "image_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd4",
+    "name": {
+      "en": "Subway",
+      "fr": "Subway",
+      "de": "Subway",
+      "it": "Subway"
+    },
+    "slug": "subway",
+    "image_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd5",
+    "name": {
+      "en": "Telpizza",
+      "fr": "Telpizza",
+      "de": "Telpizza",
+      "it": "Telpizza"
+    },
+    "slug": "telpizza",
+    "image_url": null,
+    "is_active": true
+  },
+  {
+    "_id": "6993a9f77dcee68d585a0bd6",
+    "name": {
+      "en": "Pizza",
+      "fr": "Pizza",
+      "de": "Pizza",
+      "it": "Pizza"
+    },
+    "slug": "pizza",
+    "image_url": null,
+    "is_active": true
+  }
+]

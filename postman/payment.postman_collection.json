@@ -1,0 +1,507 @@
+{
+  "info": {
+    "name": "Just Eat API — Payments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Payment management endpoints for the Just Eat API — covers customer payments, admin refunds, webhook integrations, and sandbox simulation for TWINT/PostFinance"
+  },
+  "item": [
+    {
+      "name": "👤 Customer Payments",
+      "item": [
+        {
+          "name": "Initiate Payment (TWINT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"payment_method\": \"twint\",\n  \"return_url\": \"https://app.justeat.ch/order/success\",\n  \"cancel_url\": \"https://app.justeat.ch/order/cancel\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/payments/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "initiate"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Status is PENDING', () => pm.expect(pm.response.json().data.status).to.eql('PENDING'));",
+                  "pm.test('Has redirect_url', () => pm.expect(pm.response.json().data.redirect_url).to.be.a('string'));",
+                  "if (pm.response.json().data?.provider_transaction_id) { pm.environment.set('twint_transaction_id', pm.response.json().data.provider_transaction_id); }",
+                  "if (pm.response.json().data?.id) { pm.environment.set('payment_id', pm.response.json().data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Initiate Payment (PostFinance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"payment_method\": \"postfinance\",\n  \"return_url\": \"https://app.justeat.ch/order/success\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/payments/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "initiate"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is PENDING', () => pm.expect(pm.response.json().data.status).to.eql('PENDING'));",
+                  "pm.test('Has redirect_url', () => pm.expect(pm.response.json().data.redirect_url).to.be.a('string'));",
+                  "if (pm.response.json().data?.provider_transaction_id) { pm.environment.set('pf_transaction_id', pm.response.json().data.provider_transaction_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Initiate Payment (Card / Stripe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"payment_method\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/payments/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "initiate"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has client_secret', () => pm.expect(pm.response.json().data.stripe_client_secret).to.be.a('string'));",
+                  "if (pm.response.json().data?.stripe_payment_intent_id) { pm.environment.set('stripe_pi_id', pm.response.json().data.stripe_payment_intent_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Initiate Payment (Cash)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"payment_method\": \"cash\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/payments/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "initiate"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is PENDING', () => pm.expect(pm.response.json().data.status).to.eql('PENDING'));",
+                  "pm.test('Payment method is cash', () => pm.expect(pm.response.json().data.payment_method).to.eql('cash'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/payments/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "{{order_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has payment_method', () => pm.expect(pm.response.json().data.payment_method).to.be.a('string'));",
+                  "pm.test('Has amount in CHF', () => pm.expect(pm.response.json().data.currency).to.eql('CHF'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm Cash Payment (Courier)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{courier_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/payments/{{order_id}}/cash/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "{{order_id}}", "cash", "confirm"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is COMPLETED', () => pm.expect(pm.response.json().data.status).to.eql('COMPLETED'));",
+                  "pm.test('Cash confirmed', () => pm.expect(pm.response.json().data.cash_confirmed).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🧪 Sandbox Simulation",
+      "item": [
+        {
+          "name": "Simulate TWINT Confirmation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/payments/twint/simulate-confirm/{{twint_transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "twint", "simulate-confirm", "{{twint_transaction_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is COMPLETED', () => pm.expect(pm.response.json().data.status).to.eql('COMPLETED'));",
+                  "pm.test('Has paid_at timestamp', () => pm.expect(pm.response.json().data.paid_at).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Simulate PostFinance Confirmation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/public/payments/postfinance/simulate-confirm/{{pf_transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "payments", "postfinance", "simulate-confirm", "{{pf_transaction_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is COMPLETED', () => pm.expect(pm.response.json().data.status).to.eql('COMPLETED'));",
+                  "pm.test('Has paid_at timestamp', () => pm.expect(pm.response.json().data.paid_at).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔗 Webhooks",
+      "item": [
+        {
+          "name": "Stripe Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "stripe-signature", "value": "t=1234567890,v1=test_signature" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_123\",\n      \"amount\": 8120,\n      \"currency\": \"chf\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{webhook_base_url}}/webhooks/payments/stripe",
+              "host": ["{{webhook_base_url}}"],
+              "path": ["webhooks", "payments", "stripe"]
+            },
+            "description": "⚠️ Stripe webhooks require valid signature verification. This is a template showing the expected format. In production, Stripe events are sent automatically."
+          }
+        },
+        {
+          "name": "TWINT Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-twint-signature", "value": "test_signature" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider_transaction_id\": \"{{twint_transaction_id}}\",\n  \"event_type\": \"payment.completed\",\n  \"amount\": 81.2\n}"
+            },
+            "url": {
+              "raw": "{{webhook_base_url}}/webhooks/payments/twint",
+              "host": ["{{webhook_base_url}}"],
+              "path": ["webhooks", "payments", "twint"]
+            },
+            "description": "TWINT webhook callback. In sandbox mode, HMAC signature verification is relaxed."
+          }
+        },
+        {
+          "name": "PostFinance Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-postfinance-signature", "value": "test_signature" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider_transaction_id\": \"{{pf_transaction_id}}\",\n  \"event_type\": \"payment.completed\",\n  \"amount\": 81.2\n}"
+            },
+            "url": {
+              "raw": "{{webhook_base_url}}/webhooks/payments/postfinance",
+              "host": ["{{webhook_base_url}}"],
+              "path": ["webhooks", "payments", "postfinance"]
+            },
+            "description": "PostFinance webhook callback. In sandbox mode, HMAC signature verification is relaxed."
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin Payments",
+      "item": [
+        {
+          "name": "List All Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has pagination meta', () => pm.expect(pm.response.json().meta.total).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Payments (Filter by Status)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments?status=COMPLETED",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments"],
+              "query": [
+                { "key": "status", "value": "COMPLETED" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All results are COMPLETED', () => { pm.response.json().data.forEach(p => pm.expect(p.status).to.eql('COMPLETED')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Payments (Filter by Method)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments?payment_method=twint",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments"],
+              "query": [
+                { "key": "payment_method", "value": "twint" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All results are twint', () => { pm.response.json().data.forEach(p => pm.expect(p.payment_method).to.eql('twint')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "{{payment_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has payment data', () => pm.expect(pm.response.json().data.id).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Process Refund (Partial)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 20.00,\n  \"reason\": \"Partial refund - wrong item delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{order_id}}/refund",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "{{order_id}}", "refund"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has refund details', () => { const d = pm.response.json().data; pm.expect(d.refund_amount).to.be.a('number'); pm.expect(d.refund_reason).to.be.a('string'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Process Refund (Full)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Full refund - order not delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{order_id}}/refund",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "{{order_id}}", "refund"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is REFUNDED', () => pm.expect(pm.response.json().data.status).to.eql('REFUNDED'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "webhook_base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "customer_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "courier_token", "value": "" },
+    { "key": "order_id", "value": "" },
+    { "key": "payment_id", "value": "" },
+    { "key": "twint_transaction_id", "value": "" },
+    { "key": "pf_transaction_id", "value": "" },
+    { "key": "stripe_pi_id", "value": "" }
+  ]
+}

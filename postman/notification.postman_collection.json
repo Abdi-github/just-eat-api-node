@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "Just Eat - Notifications",
+    "description": "Notification module endpoints — in-app notifications, email delivery, admin broadcasting",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4005/api/v1" },
+    { "key": "admin_token", "value": "" },
+    { "key": "customer_token", "value": "" },
+    { "key": "notification_id", "value": "" },
+    { "key": "customer_id", "value": "6993a9f77dcee68d585a1030" },
+    { "key": "owner_id", "value": "6993a9f77dcee68d585a1010" },
+    { "key": "courier_id", "value": "6993a9f77dcee68d585a1020" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('admin_token', pm.response.json().data.tokens.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Customer",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/public/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@example.ch\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('customer_token', pm.response.json().data.tokens.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin — Send Notifications",
+      "item": [
+        {
+          "name": "Send to Single User (IN_APP)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"{{customer_id}}\"],\n  \"type\": \"SYSTEM\",\n  \"title\": \"System Maintenance\",\n  \"body\": \"Scheduled maintenance on Sunday 2am-4am CET\",\n  \"channel\": \"IN_APP\",\n  \"priority\": \"HIGH\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sent 1', () => pm.expect(pm.response.json().data.sent).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Send to Single User (BOTH — with email)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"{{customer_id}}\"],\n  \"type\": \"PROMOTION_NEW\",\n  \"title\": \"New Year Sale!\",\n  \"body\": \"Get 20% off your next order with code NEWYEAR20\",\n  \"channel\": \"BOTH\",\n  \"priority\": \"NORMAL\",\n  \"data\": {\n    \"coupon_code\": \"NEWYEAR20\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sent 1', () => pm.expect(pm.response.json().data.sent).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Broadcast to Multiple Users",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"{{customer_id}}\", \"{{owner_id}}\", \"{{courier_id}}\"],\n  \"type\": \"SYSTEM\",\n  \"title\": \"Platform Update\",\n  \"body\": \"We have improved our delivery tracking! Check it out.\",\n  \"channel\": \"IN_APP\",\n  \"priority\": \"LOW\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sent 3', () => pm.expect(pm.response.json().data.sent).to.eql(3));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validation — Empty user_ids",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [],\n  \"type\": \"\",\n  \"title\": \"\",\n  \"body\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation errors', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validation — Invalid type",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"{{customer_id}}\"],\n  \"type\": \"INVALID_TYPE\",\n  \"title\": \"Test\",\n  \"body\": \"Test body\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has type error', () => {",
+                  "  const errs = pm.response.json().errors;",
+                  "  pm.expect(errs.some(e => e.path === 'type')).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer — Notifications",
+      "item": [
+        {
+          "name": "List Notifications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/notifications?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["public", "notifications"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has pagination', () => pm.expect(pm.response.json().meta).to.have.property('total'));",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.collectionVariables.set('notification_id', pm.response.json().data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Notifications — Filter by Type",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/notifications?type=SYSTEM",
+              "host": ["{{base_url}}"],
+              "path": ["public", "notifications"],
+              "query": [
+                { "key": "type", "value": "SYSTEM" }
+              ]
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All SYSTEM type', () => {",
+                  "  pm.response.json().data.forEach(n => pm.expect(n.type).to.eql('SYSTEM'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Notifications — Filter Unread",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/public/notifications?is_read=false",
+              "host": ["{{base_url}}"],
+              "path": ["public", "notifications"],
+              "query": [
+                { "key": "is_read", "value": "false" }
+              ]
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All unread', () => {",
+                  "  pm.response.json().data.forEach(n => pm.expect(n.is_read).to.be.false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Notification Count",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/public/notifications/count",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has total', () => pm.expect(pm.response.json().data).to.have.property('total'));",
+                  "pm.test('Has unread', () => pm.expect(pm.response.json().data).to.have.property('unread'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark Single as Read",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/public/notifications/{{notification_id}}/read",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Marked as read', () => pm.expect(pm.response.json().data.is_read).to.be.true);",
+                  "pm.test('Has read_at', () => pm.expect(pm.response.json().data.read_at).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/public/notifications/read-all",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has updated count', () => pm.expect(pm.response.json().data).to.have.property('updated'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Single Notification",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/public/notifications/{{notification_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete All Notifications",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/public/notifications",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has deleted count', () => pm.expect(pm.response.json().data).to.have.property('deleted'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔒 RBAC Tests",
+      "item": [
+        {
+          "name": "Customer Cannot Access Admin Send",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/notifications/send",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [\"{{customer_id}}\"],\n  \"type\": \"SYSTEM\",\n  \"title\": \"Test\",\n  \"body\": \"Test\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Forbidden', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unauthenticated Access Denied",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/public/notifications",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

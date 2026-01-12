@@ -1,0 +1,294 @@
+{
+  "info": {
+    "_postman_id": "je-cuisine-collection-001",
+    "name": "Just Eat API - Cuisine Module",
+    "description": "Cuisine management endpoints for the Just Eat API.\n\nPublic endpoints for browsing cuisines.\nAdmin endpoints for managing cuisines.\n\nTest credentials:\n- Super Admin: admin@justeat-clone.ch / Password123!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public - Cuisines",
+      "item": [
+        {
+          "name": "List Cuisines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cuisines",
+              "host": ["{{base_url}}"],
+              "path": ["public", "cuisines"]
+            },
+            "description": "List all cuisines with pagination, sorting, and filtering."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('Has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('Has meta', () => pm.expect(pm.response.json().meta).to.have.property('total'));",
+                  "if (pm.response.json().data.length > 0) {",
+                  "  pm.environment.set('cuisine_id', pm.response.json().data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Cuisines (French)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cuisines?lang=fr",
+              "host": ["{{base_url}}"],
+              "path": ["public", "cuisines"],
+              "query": [{ "key": "lang", "value": "fr" }]
+            },
+            "description": "List cuisines with French names."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has French names', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Cuisines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cuisines?search=pizza",
+              "host": ["{{base_url}}"],
+              "path": ["public", "cuisines"],
+              "query": [{ "key": "search", "value": "pizza" }]
+            },
+            "description": "Search cuisines by name across all languages."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has results', () => pm.expect(pm.response.json().data.length).to.be.greaterThan(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Cuisine by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cuisines/slug/italian",
+              "host": ["{{base_url}}"],
+              "path": ["public", "cuisines", "slug", "italian"]
+            },
+            "description": "Get a specific cuisine by its URL-friendly slug."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct slug', () => pm.expect(pm.response.json().data.slug).to.eql('italian'));",
+                  "pm.test('Has restaurant_count', () => pm.expect(pm.response.json().data).to.have.property('restaurant_count'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Cuisine by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cuisines/{{cuisine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "cuisines", "{{cuisine_id}}"]
+            },
+            "description": "Get a specific cuisine by its MongoDB ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has restaurant_count', () => pm.expect(pm.response.json().data).to.have.property('restaurant_count'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin - Cuisines",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@justeat-clone.ch\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["public", "auth", "login"]
+            },
+            "description": "Login as admin to get access token for admin operations."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const token = pm.response.json().data.tokens.access_token;",
+                  "pm.environment.set('auth_token', token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Cuisine",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"en\": \"Ethiopian\",\n    \"fr\": \"Éthiopien\",\n    \"de\": \"Äthiopisch\",\n    \"it\": \"Etiope\"\n  },\n  \"image_url\": \"https://example.com/ethiopian.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/cuisines",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cuisines"]
+            },
+            "description": "Create a new cuisine (requires cuisines:create permission)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Slug auto-generated', () => pm.expect(pm.response.json().data.slug).to.be.a('string'));",
+                  "pm.environment.set('new_cuisine_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Cuisine",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": {\n    \"it\": \"Etiope (aggiornato)\"\n  },\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/cuisines/{{new_cuisine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cuisines", "{{new_cuisine_id}}"]
+            },
+            "description": "Update a cuisine. Supports partial name updates."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is_active updated', () => pm.expect(pm.response.json().data.is_active).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Cuisine",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/cuisines/{{new_cuisine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cuisines", "{{new_cuisine_id}}"]
+            },
+            "description": "Delete a cuisine. Fails if cuisine has linked restaurants."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Deleted', () => pm.expect(pm.response.json().message).to.include('deleted'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Cuisine with Restaurants (Should Fail)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/cuisines/6993a9f77dcee68d585a0bae",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cuisines", "6993a9f77dcee68d585a0bae"]
+            },
+            "description": "Attempt to delete Italian cuisine (has 23+ restaurants). Should return 400."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Cannot delete', () => pm.expect(pm.response.json().message).to.include('Cannot delete'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
