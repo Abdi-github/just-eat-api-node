@@ -69,7 +69,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 512M
           cpus: '1.0'
 
   # ── Redis ──
@@ -103,8 +103,7 @@ services:
 
 networks:
   justeat_network:
-    driver: bridge
-    name: justeat_network_prod
+    external: true
   traefik:
     external: true
 
