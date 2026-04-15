@@ -24,3 +24,6 @@ uploads/
 *.tsbuildinfo
 .npm
 .eslintcache
+
+# Production secrets (use .env.production.example as template)
+.env.production

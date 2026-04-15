@@ -18,7 +18,7 @@ services:
     ports:
       - '${API_PORT:-4011}:4005'
     env_file:
-      - .env
+      - .env.production
     environment:
       - NODE_ENV=production
     depends_on:
@@ -28,6 +28,13 @@ services:
         condition: service_healthy
     networks:
       - justeat_network
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.justeat-api.rule=Host(`justeat-api.swiftapp.ch`)"
+      - "traefik.http.routers.justeat-api.entrypoints=websecure"
+      - "traefik.http.routers.justeat-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.justeat-api.loadbalancer.server.port=4005"
     deploy:
       resources:
         limits:
@@ -98,6 +105,8 @@ networks:
   justeat_network:
     driver: bridge
     name: justeat_network_prod
+  traefik:
+    external: true
 
 volumes:
   mongodb_data:

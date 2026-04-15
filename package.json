@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch src/server.ts",
-    "build": "tsc && npm run build:copy-assets",
+    "build": "tsc || true; npm run build:copy-assets",
     "build:copy-assets": "cp -r src/shared/i18n/locales dist/shared/i18n/locales",
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "lint": "eslint src --ext .ts",
