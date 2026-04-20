@@ -14,7 +14,7 @@ services:
       dockerfile: Dockerfile
       target: production
     container_name: justeat_api_prod
-    restart: unless-stopped
+    restart: no
     expose:
       - "4005"
     env_file:
@@ -52,7 +52,7 @@ services:
   mongodb:
     image: mongo:7.0
     container_name: justeat_mongodb_prod
-    restart: unless-stopped
+    restart: no
     labels:
       - "sablier.enable=true"
       - "sablier.group=justeat"
@@ -83,7 +83,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: justeat_redis_prod
-    restart: unless-stopped
+    restart: no
     labels:
       - "sablier.enable=true"
       - "sablier.group=justeat"

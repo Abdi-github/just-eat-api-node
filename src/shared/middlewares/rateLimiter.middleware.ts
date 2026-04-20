@@ -39,7 +39,7 @@ const createRateLimiter = (maxRequests: number, keyPrefix: string) => {
     max: maxRequests,
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { xForwardedForHeader: false },
+    validate: { xForwardedForHeader: false, ip: false },
     store: getRedisStore(keyPrefix),
     message: async (_req: Request, res: Response) => {
       sendErrorResponse(res, 429, 'Too many requests, please try again later.');
