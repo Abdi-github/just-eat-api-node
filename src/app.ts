@@ -5,8 +5,10 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import hpp from 'hpp';
+import swaggerUi from 'swagger-ui-express';
 
 import config from './config/index.js';
+import { swaggerSpec } from './config/swagger.js';
 import { logger, morganStream } from './shared/logger/index.js';
 import { errorHandler, notFoundHandler } from './shared/errors/index.js';
 import { languageMiddleware, guestRateLimiter } from './shared/middlewares/index.js';
@@ -108,6 +110,16 @@ export const createApp = (): Application => {
         });
       }
     }
+  );
+
+  // API Documentation (Swagger UI)
+  app.use(
+    `${config.apiPrefix}/${config.apiVersion}/docs`,
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec as object, {
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'Just Eat Clone - API Docs',
+    })
   );
 
   // API Routes
